@@ -30,7 +30,7 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 <body><main id="app"><div class="wrap">
 <header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>BACALORIA QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
 <section class="stats" aria-label="إحصائيات التقدم"><div class="stat"><small>إجمالي الخبرة</small><strong><span id="total">0</span> XP</strong></div><div class="stat"><small>المستوى الحالي</small><strong id="level">Level 1</strong></div><div class="stat"><small>التقدم للمستوى التالي</small><strong><span id="remain">1000</span> XP</strong><div class="bar"><span id="progress"></span></div></div></section>
-<h2>🗓️ مهام الأسبوع | علّم بعد الإنجاز</h2>
+<h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
 <section class="days" id="days">
 <article class="day"><div class="dayhead"><h3>السبت</h3><span class="tag">ARABIC + CODE</span></div><div class="tasks">
 <div class="task"><input type="checkbox" data-xp="100" id="sat1"><label for="sat1">04:00–06:00 محاضرة العربي — الجزء الأول</label><span class="xp">+100 XP</span></div>
@@ -73,10 +73,18 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 </div></main>
 <script>
 const boxes=[...document.querySelectorAll('input[type="checkbox"][data-xp]')];
-const key='bacaloria-quest-progress-v1';
-function load(){let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){};boxes.forEach(b=>{b.checked=!!saved[b.id];b.closest('.task').classList.toggle('done',b.checked);b.addEventListener('change',()=>{b.closest('.task').classList.toggle('done',b.checked);save();update()})});update()}
-function save(){const data={};boxes.forEach(b=>data[b.id]=b.checked);localStorage.setItem(key,JSON.stringify(data))}
-function update(){const xp=boxes.reduce((s,b)=>s+(b.checked?Number(b.dataset.xp):0),0);const level=Math.floor(xp/1000)+1;const progress=xp%1000;document.getElementById('total').textContent=xp;document.getElementById('level').textContent='Level '+level;document.getElementById('remain').textContent=(1000-progress)+' XP';document.getElementById('progress').style.width=(progress/10)+'%'}
-document.getElementById('reset').addEventListener('click',()=>{if(confirm('تبدأ أسبوعًا جديدًا وتمسح كل العلامات؟')){boxes.forEach(b=>b.checked=false);save();load()}});
-document.getElementById('all').addEventListener('click',()=>{boxes.forEach(b=>b.checked=false);save();load()});load();
+const key='bacaloria-quest-progress-v2';
+let state={currentWeek:1,weeks:{}};
+function readState(){try{const x=JSON.parse(localStorage.getItem(key)||'null');if(x&&x.weeks)state=x;}catch(e){}}
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function weekData(){if(!state.weeks[state.currentWeek])state.weeks[state.currentWeek]={};return state.weeks[state.currentWeek]}
+function applyWeek(){const data=weekData();boxes.forEach(b=>{b.checked=!!data[b.id];b.closest('.task').classList.toggle('done',b.checked)});update()}
+function update(){const allXp=Object.values(state.weeks).reduce((sum,w)=>sum+boxes.reduce((s,b)=>s+(w[b.id]?Number(b.dataset.xp):0),0),0);const currentXp=boxes.reduce((s,b)=>s+(b.checked?Number(b.dataset.xp):0),0);const level=Math.floor(allXp/1000)+1;const progress=allXp%1000;document.getElementById('total').textContent=allXp;document.getElementById('level').textContent='Level '+level;document.getElementById('remain').textContent=(1000-progress)+' XP';document.getElementById('progress').style.width=(progress/10)+'%';document.getElementById('weekLabel').textContent='Week '+state.currentWeek;document.getElementById('weekInfo').textContent='XP هذا الأسبوع: '+currentXp+' • إجمالي XP: '+allXp}
+boxes.forEach(b=>b.addEventListener('change',()=>{weekData()[b.id]=b.checked;b.closest('.task').classList.toggle('done',b.checked);save();update()}));
+document.getElementById('nextWeek').addEventListener('click',()=>{if(!confirm('تبدأ Week '+(state.currentWeek+1)+'؟ سيتم حفظ تقدم الأسبوع الحالي كما هو.'))return;state.currentWeek++;save();applyWeek();window.scrollTo({top:0,behavior:'smooth'})});
+document.getElementById('reset').addEventListener('click',()=>{if(confirm('تمسح علامات الأسبوع الحالي فقط؟')){state.weeks[state.currentWeek]={};save();applyWeek()}});
+document.getElementById('all').addEventListener('click',()=>{boxes.forEach(b=>{weekData()[b.id]=false;b.checked=false;b.closest('.task').classList.remove('done')});save();update()});
+function formatTimes(root){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){node.nodeValue=node.nodeValue.replace(/\b(\d{1,2}):(\d{2})\b/g,(match,h,m)=>{h=Number(h);const suffix=h<12?'AM':'PM';const hour=h%12||12;return hour+':'+m+' '+suffix})}}
+formatTimes(document.getElementById('days'));document.querySelectorAll('.note,.smallprint').forEach(formatTimes);
+readState();applyWeek();
 </script></body></html>
