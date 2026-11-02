@@ -70,12 +70,12 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 </section>
 <section class="footergrid"><div class="card"><h3>🎮 قواعد الـ XP</h3><ul class="rules"><li>حضور محاضرة: 100 XP</li><li>مذاكرة وفهم: 150 XP</li><li>تلخيص: 50 XP</li><li>حل واجب: 150 XP</li><li>امتحان: 200 XP</li><li>مراجعة درس قديم: 75 XP</li><li>تصحيح الأخطاء: 75 XP</li></ul></div><div class="card"><h3>🏆 هدف الأسبوع</h3><p>كل 1000 XP = Level Up!</p><p class="empty">علّم على المهمة بعد إنجازها فعلًا؛ تقدر تلغي العلامة لو احتجت تصحيحها.</p><div class="actions"><button id="reset" class="reset">إعادة ضبط الأسبوع</button><button id="all">إلغاء كل العلامات</button></div></div></section>
 <p class="smallprint">يُحفظ تقدمك تلقائيًا على هذا المتصفح والجهاز باستخدام التخزين المحلي؛ لو فتحت الموقع على جهاز أو متصفح آخر فلن ينتقل التقدم تلقائيًا. الأوقات بتوقيت القاهرة. يوم الثلاثاء استثناء بسبب المدرسة وحصة الإنجليزي. حافظ على نوم كافٍ؛ لو ميعاد 04:00 هيقلل نومك، ابدأ متأخرًا وحرّك الجدول بدل السهر أو تقليل النوم.</p>
-<section class="card" id="trophyWall"><h3>🏆 Achievement Wall</h3><div id="trophies"></div></section></div></div>
+<section class="card" id="trophyWall"><h3>🏆 Achievement Wall</h3><div id="trophies"></div></section></div></main></div></div>
 <script>
 const boxes=[...document.querySelectorAll('input[type="checkbox"][data-xp]')];
-const key='bacaloria-quest-progress-v2';
+const key='bacaloria-quest-progress-v3';
 let state={currentWeek:1,weeks:{}};
-function readState(){try{const x=JSON.parse(localStorage.getItem(key)||'null');if(x&&x.weeks){state=x;return}const old=JSON.parse(localStorage.getItem('bacaloria-quest-progress-v1')||'null');if(old){state.weeks[1]=old;save()}}catch(e){}}
+function readState(){try{const x=JSON.parse(localStorage.getItem(key)||'null');if(x&&x.weeks)state=x}catch(e){}}
 function save(){localStorage.setItem(key,JSON.stringify(state))}
 function weekData(){if(!state.weeks[state.currentWeek])state.weeks[state.currentWeek]={};return state.weeks[state.currentWeek]}
 function applyWeek(){const data=weekData();boxes.forEach(b=>{b.checked=!!data[b.id];b.closest('.task').classList.toggle('done',b.checked)});update()}
