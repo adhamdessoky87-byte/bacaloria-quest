@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BACALORIA QUEST</title>
+<style>
+:root {
+ --site-primary:#263b86;
+ --site-secondary:#6b35a8;
+ --site-background:#10172f;
+ --site-on-primary:#ffffff;
+ --site-on-secondary:#ffffff;
+ --site-on-background:#f4f5ff;
+ --site-font-body:Tahoma, Arial, sans-serif;
+ --site-font-heading:Tahoma, Arial, sans-serif;
+ --site-heading-scale:1;
+ --site-spacing-scale:1;
+ --site-radius-scale:1;
+ --site-decoration-opacity:1;
+ --panel:#1b2548; --panel2:#222f5d; --line:#46558b; --muted:#c2c9e8; --gold:#ffd166; --mint:#65e6bd;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--site-background);color:var(--site-on-background);font-family:var(--site-font-body)}
+#app{min-height:100vh;width:100%;padding:24px;background:radial-gradient(ellipse at 10% 0%,#403078 0,transparent 38%),radial-gradient(ellipse at 90% 30%,#183f72 0,transparent 35%),var(--site-background);border-radius:0}
+.wrap{max-width:1100px;margin:auto}.hero{background:linear-gradient(120deg,var(--site-primary),var(--site-secondary));border:1px solid #8293e0;border-radius:calc(22px * var(--site-radius-scale));padding:24px;display:flex;gap:20px;align-items:center;justify-content:space-between;box-shadow:0 15px 40px #050a1e88}
+.kicker{color:#ffe69a;font-weight:bold;letter-spacing:1px;font-size:13px}.hero h1{font-family:var(--site-font-heading);font-size:calc(32px * var(--site-heading-scale));margin:7px 0}.hero p{margin:0;color:#e4e7ff}.heroicon{font-size:68px;filter:drop-shadow(0 8px 8px #1118)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:calc(16px * var(--site-radius-scale));padding:16px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:24px;color:var(--gold);margin-top:4px}.bar{height:12px;background:#0d1430;border-radius:99px;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--gold));transition:width .2s}
+h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.day{background:var(--panel);border:1px solid var(--line);border-radius:calc(16px * var(--site-radius-scale));overflow:hidden}.dayhead{padding:13px 16px;background:linear-gradient(90deg,var(--panel2),#303b70);display:flex;justify-content:space-between;align-items:center}.dayhead h3{margin:0;font-size:18px}.tag{font-size:12px;color:#15203e;background:var(--gold);padding:4px 9px;border-radius:99px;font-weight:bold}.tasks{padding:8px 14px}.task{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:12px 2px;border-bottom:1px solid #ffffff18}.task:last-child{border-bottom:0}.task input{width:19px;height:19px;accent-color:var(--mint);cursor:pointer}.task label{cursor:pointer;line-height:1.5}.task.done label{text-decoration:line-through;color:#a4afcf}.xp{color:var(--gold);font-weight:bold;white-space:nowrap;font-size:13px}.note{color:var(--muted);font-size:13px;line-height:1.7;padding:0 16px 14px}.rest{border:1px dashed #65e6bd;background:#142f3b}.footergrid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:16px}.card h3{margin:0 0 10px}.rules{color:var(--muted);line-height:1.9;margin:0;padding-right:20px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #7484c2;background:#344784;color:white;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:bold}button:hover{filter:brightness(1.15)}.reset{background:#572f52}.smallprint{color:var(--muted);font-size:12px;margin-top:18px;line-height:1.7}.empty{color:var(--muted);font-size:13px}
+@media(max-width:700px){#app{padding:14px}.hero{padding:18px}.hero h1{font-size:24px}.heroicon{font-size:48px}.days,.footergrid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:20px}.task{grid-template-columns:22px 1fr auto}}
+</style></head>
+<body><main id="app"><div class="wrap">
+<header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>BACALORIA QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
+<section class="stats" aria-label="إحصائيات التقدم"><div class="stat"><small>إجمالي الخبرة</small><strong><span id="total">0</span> XP</strong></div><div class="stat"><small>المستوى الحالي</small><strong id="level">Level 1</strong></div><div class="stat"><small>التقدم للمستوى التالي</small><strong><span id="remain">1000</span> XP</strong><div class="bar"><span id="progress"></span></div></div></section>
+<h2>🗓️ مهام الأسبوع | علّم بعد الإنجاز</h2>
+<section class="days" id="days">
+<article class="day"><div class="dayhead"><h3>السبت</h3><span class="tag">ARABIC + CODE</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="100" id="sat1"><label for="sat1">04:00–06:00 محاضرة العربي — الجزء الأول</label><span class="xp">+100 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="sat2"><label for="sat2">06:20–08:20 محاضرة العربي — الجزء الثاني والفهم</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="50" id="sat3"><label for="sat3">08:40–09:40 تلخيص العربي + 09:40–11:30 حل أسئلة/مراجعة أو وقت احتياطي</label><span class="xp">+50 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="100" id="sat4"><label for="sat4">12:00–14:00 محاضرة البرمجة</label><span class="xp">+100 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="sat5"><label for="sat5">19:00–20:00 مذاكرة البرمجة والتطبيق العملي</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="sat6"><label for="sat6">20:00–21:30 واجب البرمجة</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="200" id="sat7"><label for="sat7">21:30–22:00 امتحان البرمجة</label><span class="xp">+200 XP</span></div>
+</div><div class="note">فواصل: 06:00–06:20 و08:20–08:40. بعد محاضرة البرمجة: نوم/راحة 14:00–17:00، ثم مهام البرمجة 19:00–22:00.</div></article>
+<article class="day"><div class="dayhead"><h3>الأحد</h3><span class="tag">ENGLISH EXTRA</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="100" id="sun1"><label for="sun1">04:00–08:00 محاضرة الإنجليزي الإضافية (4 ساعات)</label><span class="xp">+100 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="sun2"><label for="sun2">08:30–10:00 حل وتدريب على الإنجليزي</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="75" id="sun3"><label for="sun3">10:00–11:00 مراجعة وتثبيت النقاط الصعبة</label><span class="xp">+75 XP</span></div>
+</div><div class="note">المحاضرة الإضافية مدتها 4 ساعات؛ لو الأحد مزدحم انقلها لوقت مناسب خلال الأسبوع بدل ضغط اليوم.</div></article>
+<article class="day"><div class="dayhead"><h3>الاثنين</h3><span class="tag">HISTORY</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="100" id="mon1"><label for="mon1">04:00–08:00 متابعة محاضرة التاريخ التي نزلت الأحد</label><span class="xp">+100 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="mon2"><label for="mon2">08:30–10:00 مذاكرة وفهم التاريخ</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="50" id="mon3"><label for="mon3">10:00–11:00 تلخيص أهم النقاط</label><span class="xp">+50 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="75" id="mon4"><label for="mon4">11:00–12:00 مراجعة قصيرة للعربي</label><span class="xp">+75 XP</span></div>
+</div></article>
+<article class="day"><div class="dayhead"><h3>الثلاثاء</h3><span class="tag">ENGLISH CLASS</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="150" id="tue1"><label for="tue1">15:00–17:00 مذاكرة وتحضير الإنجليزي بعد المدرسة والراحة</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="100" id="tue2"><label for="tue2">20:00–23:00 حصة الإنجليزي</label><span class="xp">+100 XP</span></div>
+</div><div class="note">يوم المدرسة: 15:00–17:00 مذاكرة بعد الرجوع والراحة، ثم حصة الإنجليزي 20:00–23:00. بعد الحصة نوم فقط.</div></article>
+<article class="day"><div class="dayhead"><h3>الأربعاء</h3><span class="tag">ENGLISH HOMEWORK</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="150" id="wed1"><label for="wed1">04:00–06:00 حل واجب الإنجليزي الخاص بحصة الثلاثاء</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="200" id="wed2"><label for="wed2">06:20–07:20 وقت إضافي للواجب/التدريب (حسب المتاح)</label><span class="xp">+200 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="75" id="wed3"><label for="wed3">07:20–08:00 تصحيح الأخطاء ومراجعتها</label><span class="xp">+75 XP</span></div>
+</div></article>
+<article class="day"><div class="dayhead"><h3>الخميس</h3><span class="tag">CATCH-UP DAY</span></div><div class="tasks">
+<div class="task"><input type="checkbox" data-xp="150" id="thu1"><label for="thu1">04:00–06:00 اختار المادة الأكثر احتياجًا وراجعها</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="150" id="thu2"><label for="thu2">06:20–08:00 إنهاء واجب أو جزء متأخر</label><span class="xp">+150 XP</span></div>
+<div class="task"><input type="checkbox" data-xp="75" id="thu3"><label for="thu3">08:30–09:30 مراجعة خفيفة وتقييم الأسبوع</label><span class="xp">+75 XP</span></div>
+</div><div class="note">الأربعاء مخصص لواجب الإنجليزي. لو امتحان الإنجليزي لم ينزل، استخدم وقته في التدريب أو التصحيح ولا تعتبره امتحانًا إلزاميًا.</div></article>
+<article class="day rest"><div class="dayhead"><h3>الجمعة</h3><span class="tag">REST DAY</span></div><div class="tasks"><div class="task"><span>🌿</span><label>إجازة كاملة — افصل واستمتع بوقتك</label><span class="xp">0 XP</span></div></div></article>
+</section>
+<section class="footergrid"><div class="card"><h3>🎮 قواعد الـ XP</h3><ul class="rules"><li>حضور محاضرة: 100 XP</li><li>مذاكرة وفهم: 150 XP</li><li>تلخيص: 50 XP</li><li>حل واجب: 150 XP</li><li>امتحان: 200 XP</li><li>مراجعة درس قديم: 75 XP</li><li>تصحيح الأخطاء: 75 XP</li></ul></div><div class="card"><h3>🏆 هدف الأسبوع</h3><p>كل 1000 XP = Level Up!</p><p class="empty">علّم على المهمة بعد إنجازها فعلًا؛ تقدر تلغي العلامة لو احتجت تصحيحها.</p><div class="actions"><button id="reset" class="reset">إعادة ضبط الأسبوع</button><button id="all">إلغاء كل العلامات</button></div></div></section>
+<p class="smallprint">يُحفظ تقدمك تلقائيًا على هذا المتصفح والجهاز باستخدام التخزين المحلي؛ لو فتحت الموقع على جهاز أو متصفح آخر فلن ينتقل التقدم تلقائيًا. الأوقات بتوقيت القاهرة. يوم الثلاثاء استثناء بسبب المدرسة وحصة الإنجليزي. حافظ على نوم كافٍ؛ لو ميعاد 04:00 هيقلل نومك، ابدأ متأخرًا وحرّك الجدول بدل السهر أو تقليل النوم.</p>
+</div></main>
+<script>
+const boxes=[...document.querySelectorAll('input[type="checkbox"][data-xp]')];
+const key='bacaloria-quest-progress-v1';
+function load(){let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){};boxes.forEach(b=>{b.checked=!!saved[b.id];b.closest('.task').classList.toggle('done',b.checked);b.addEventListener('change',()=>{b.closest('.task').classList.toggle('done',b.checked);save();update()})});update()}
+function save(){const data={};boxes.forEach(b=>data[b.id]=b.checked);localStorage.setItem(key,JSON.stringify(data))}
+function update(){const xp=boxes.reduce((s,b)=>s+(b.checked?Number(b.dataset.xp):0),0);const level=Math.floor(xp/1000)+1;const progress=xp%1000;document.getElementById('total').textContent=xp;document.getElementById('level').textContent='Level '+level;document.getElementById('remain').textContent=(1000-progress)+' XP';document.getElementById('progress').style.width=(progress/10)+'%'}
+document.getElementById('reset').addEventListener('click',()=>{if(confirm('تبدأ أسبوعًا جديدًا وتمسح كل العلامات؟')){boxes.forEach(b=>b.checked=false);save();load()}});
+document.getElementById('all').addEventListener('click',()=>{boxes.forEach(b=>b.checked=false);save();load()});load();
+</script></body></html>
