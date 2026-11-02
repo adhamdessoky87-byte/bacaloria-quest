@@ -75,7 +75,7 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 const boxes=[...document.querySelectorAll('input[type="checkbox"][data-xp]')];
 const key='bacaloria-quest-progress-v2';
 let state={currentWeek:1,weeks:{}};
-function readState(){try{const x=JSON.parse(localStorage.getItem(key)||'null');if(x&&x.weeks)state=x;}catch(e){}}
+function readState(){try{const x=JSON.parse(localStorage.getItem(key)||'null');if(x&&x.weeks){state=x;return}const old=JSON.parse(localStorage.getItem('bacaloria-quest-progress-v1')||'null');if(old){state.weeks[1]=old;save()}}catch(e){}}
 function save(){localStorage.setItem(key,JSON.stringify(state))}
 function weekData(){if(!state.weeks[state.currentWeek])state.weeks[state.currentWeek]={};return state.weeks[state.currentWeek]}
 function applyWeek(){const data=weekData();boxes.forEach(b=>{b.checked=!!data[b.id];b.closest('.task').classList.toggle('done',b.checked)});update()}
