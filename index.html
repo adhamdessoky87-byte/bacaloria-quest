@@ -87,7 +87,33 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 .aiChatLog{height:min(48vh,430px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px;background:#10172f;border:1px solid #46558b;border-radius:14px;margin:14px 0}.aiBubble{max-width:88%;padding:11px 14px;border-radius:14px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.aiBubble.assistant{align-self:flex-start;background:#263b86}.aiBubble.user{align-self:flex-end;background:#3b2b69}.aiBubble.error{background:#572f35}.aiNotice{font-size:13px;line-height:1.8;color:#c2c9e8;background:#10172f;padding:12px;border-radius:10px;margin:12px 0}
 .spotifyFrame{width:100%;height:380px;border:0;border-radius:14px;background:#10172f}
 @media(max-width:600px){.toolPanel{padding:10px}.toolInner{padding:16px;margin-top:58px}.timerSettings{grid-template-columns:1fr 1fr}}
-/* Gamified palette and theme switch */:root{--site-primary:#2563eb;--site-secondary:#0ea5e9;--site-background:#101827;--site-on-background:#f4f8ff;--panel:#1b2940;--panel2:#263b59;--line:#385574;--muted:#b8c9dc;--gold:#ffad42;--mint:#55d6be}#app{background:radial-gradient(ellipse at 10% 0%,#164e8a 0,transparent 38%),radial-gradient(ellipse at 90% 30%,#155e75 0,transparent 35%),var(--site-background)}.hero{background:linear-gradient(120deg,#1d4ed8,#0891b2);border-color:#60a5fa}.dayhead{background:linear-gradient(90deg,#263b59,#1e4970)}button,#toolsMenuBtn{background:#2563eb;border-color:#60a5fa}.toolInner,.gatebox,.side,.plannerday{background:#1b2940;border-color:#385574}.toolPanel{background:#101827}.assistantChoice{background:linear-gradient(120deg,#203653,#142238);border-color:#456887}#themeToggle{position:fixed;z-index:12002;top:14px;left:14px;width:48px;height:48px;border-radius:14px;background:#203653;border:1px solid #60a5fa;font-size:22px;box-shadow:0 8px 24px #0003}body.light-theme{--site-background:#f2f7fc;--site-on-background:#172b43;--panel:#fff;--panel2:#e7f1fb;--line:#c7d8e8;--muted:#58718a;--gold:#d97706;--mint:#0f9f86;color-scheme:light}body.light-theme #app{background:radial-gradient(ellipse at 10% 0%,#dbeafe 0,transparent 40%),radial-gradient(ellipse at 90% 30%,#cffafe 0,transparent 38%),#f2f7fc}body.light-theme .stat,body.light-theme .card,body.light-theme .day,body.light-theme .side,body.light-theme .plannerday,body.light-theme .toolInner,body.light-theme .gatebox{background:#fff;color:#172b43;border-color:#c7d8e8}body.light-theme .dayhead{background:#e7f1fb;color:#173653}body.light-theme h2,body.light-theme .dayhead h3,body.light-theme .card h3{color:#173653}body.light-theme .note,body.light-theme .rules,body.light-theme .smallprint,body.light-theme .plannerMeta,body.light-theme .gatebox p,body.light-theme .gatebox label,body.light-theme .stat small{color:#58718a}body.light-theme .toolPanel{background:#edf4fa}body.light-theme .toolField,body.light-theme .gatebox input,body.light-theme .gatebox select,body.light-theme .subjectEditorRow input,body.light-theme .subjectEditorRow textarea,body.light-theme .manualTaskRow input,body.light-theme .manualTaskRow select{background:#f7fbff;color:#172b43;border-color:#c7d8e8}body.light-theme .assistantChoice{background:linear-gradient(120deg,#eff6ff,#ecfeff);color:#173653}body.light-theme .assistantChoice small{color:#58718a}body.light-theme #toolsDrawer{background:#f8fbff;color:#173653}body.light-theme .drawerAction{background:#e7f1fb;color:#173653}body.light-theme #accountGate{background:#edf4fa}body.light-theme .gatebox{background:#fff}body.light-theme .manualBuilder,body.light-theme .subjectEditorRow{background:#f3f8fd}body.light-theme #themeToggle{background:#fff;color:#173653;border-color:#bfdbfe}@media(max-width:600px){#themeToggle{top:14px;left:14px}}</style></head>
+/* Gamified palette and theme switch */:root{--site-primary:#2563eb;--site-secondary:#0ea5e9;--site-background:#101827;--site-on-background:#f4f8ff;--panel:#1b2940;--panel2:#263b59;--line:#385574;--muted:#b8c9dc;--gold:#ffad42;--mint:#55d6be}#app{background:radial-gradient(ellipse at 10% 0%,#164e8a 0,transparent 38%),radial-gradient(ellipse at 90% 30%,#155e75 0,transparent 35%),var(--site-background)}.hero{background:linear-gradient(120deg,#1d4ed8,#0891b2);border-color:#60a5fa}.dayhead{background:linear-gradient(90deg,#263b59,#1e4970)}button,#toolsMenuBtn{background:#2563eb;border-color:#60a5fa}.toolInner,.gatebox,.side,.plannerday{background:#1b2940;border-color:#385574}.toolPanel{background:#101827}.assistantChoice{background:linear-gradient(120deg,#203653,#142238);border-color:#456887}#themeToggle{position:fixed;z-index:12002;top:14px;left:14px;width:48px;height:48px;border-radius:14px;background:#203653;border:1px solid #60a5fa;font-size:22px;box-shadow:0 8px 24px #0003}body.light-theme{--site-background:#f2f7fc;--site-on-background:#172b43;--panel:#fff;--panel2:#e7f1fb;--line:#c7d8e8;--muted:#58718a;--gold:#d97706;--mint:#0f9f86;color-scheme:light}body.light-theme #app{background:radial-gradient(ellipse at 10% 0%,#dbeafe 0,transparent 40%),radial-gradient(ellipse at 90% 30%,#cffafe 0,transparent 38%),#f2f7fc}body.light-theme .stat,body.light-theme .card,body.light-theme .day,body.light-theme .side,body.light-theme .plannerday,body.light-theme .toolInner,body.light-theme .gatebox{background:#fff;color:#172b43;border-color:#c7d8e8}body.light-theme .dayhead{background:#e7f1fb;color:#173653}body.light-theme h2,body.light-theme .dayhead h3,body.light-theme .card h3{color:#173653}body.light-theme .note,body.light-theme .rules,body.light-theme .smallprint,body.light-theme .plannerMeta,body.light-theme .gatebox p,body.light-theme .gatebox label,body.light-theme .stat small{color:#58718a}body.light-theme .toolPanel{background:#edf4fa}body.light-theme .toolField,body.light-theme .gatebox input,body.light-theme .gatebox select,body.light-theme .subjectEditorRow input,body.light-theme .subjectEditorRow textarea,body.light-theme .manualTaskRow input,body.light-theme .manualTaskRow select{background:#f7fbff;color:#172b43;border-color:#c7d8e8}body.light-theme .assistantChoice{background:linear-gradient(120deg,#eff6ff,#ecfeff);color:#173653}body.light-theme .assistantChoice small{color:#58718a}body.light-theme #toolsDrawer{background:#f8fbff;color:#173653}body.light-theme .drawerAction{background:#e7f1fb;color:#173653}body.light-theme #accountGate{background:#edf4fa}body.light-theme .gatebox{background:#fff}body.light-theme .manualBuilder,body.light-theme .subjectEditorRow{background:#f3f8fd}body.light-theme #themeToggle{background:#fff;color:#173653;border-color:#bfdbfe}@media(max-width:600px){#themeToggle{top:14px;left:14px}}
+/* Study Gamified redesign */
+:root{--quest-blue:#2563eb;--quest-cyan:#06b6d4;--quest-orange:#f59e0b}
+#app{padding:clamp(14px,3vw,30px)}
+.hero{position:relative;overflow:hidden;min-height:190px;border-radius:26px;padding:clamp(22px,4vw,38px);background:linear-gradient(115deg,#1d4ed8 0%,#0891b2 58%,#164e63 100%);box-shadow:0 18px 45px #02081766}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff22;border-radius:50%;left:-65px;top:-105px;box-shadow:0 0 0 28px #ffffff09,0 0 0 58px #ffffff08}
+.heroicon{position:relative;z-index:1;font-size:clamp(48px,7vw,76px)}
+.stats{gap:14px;margin:20px 0}.stat{border-radius:20px;padding:18px;background:linear-gradient(145deg,var(--panel),var(--panel2));box-shadow:0 10px 25px #02081722;transition:transform .2s}.stat:hover,.day:hover,.plannerday:hover{transform:translateY(-2px)}
+.stat strong{font-size:clamp(20px,3vw,28px)}
+.bar{height:14px;border:1px solid #ffffff18}.bar span{background:linear-gradient(90deg,#06b6d4,#f59e0b)}
+h2{font-size:clamp(19px,3vw,24px);margin-top:26px}
+.day,.plannerday{border-radius:20px;box-shadow:0 10px 28px #02081720;transition:transform .2s}
+.dayhead{padding:16px 18px}.task{padding:14px 3px}.task input,.plannerTask input{accent-color:#06b6d4}
+.questWallet{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:16px 0;padding:18px 20px;border-radius:20px;background:linear-gradient(110deg,#854d0e,#b45309 55%,#d97706);border:1px solid #fbbf24;color:white;box-shadow:0 12px 28px #92400e33}
+.questWallet b{font-size:25px}.questWallet small{display:block;opacity:.85}.questWallet button{background:#fff7ed;color:#92400e;border-color:#fed7aa}
+#shopPanel{display:none;position:fixed;z-index:11999;inset:0;overflow:auto;background:#0b1425ed;padding:18px}
+#shopPanel.active{display:block}.shopInner{max-width:850px;margin:55px auto 30px;background:var(--panel);color:var(--site-on-background);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 25px 80px #0008}
+.shopGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.shopItem{padding:16px;border-radius:17px;background:var(--panel2);border:1px solid var(--line);text-align:center}
+.shopArt{height:76px;display:grid;place-items:center;border-radius:13px;margin-bottom:12px;font-size:35px;background:linear-gradient(135deg,#1d4ed8,#0891b2)}
+.shopItem p{font-size:13px;color:var(--muted);min-height:38px}.shopItem button{width:100%;margin-top:8px}
+.shopTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#shopMessage{min-height:22px;color:var(--gold);font-size:13px;margin-top:12px}
+body.light-theme .questWallet{color:white}body.light-theme .shopInner{background:#fff;color:#172b43}body.light-theme .shopItem{background:#eff6ff;color:#173653}body.light-theme .shopItem p{color:#58718a}
+@media(max-width:650px){.shopGrid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}
+@media(max-width:390px){.shopGrid{grid-template-columns:1fr}}
+</style></head>
 <body>
 <div id="accountGate">
  <div class="gatebox">
@@ -177,7 +203,15 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 <div class="journey"><aside class="side"><h2>🧭 MY JOURNEY</h2><p>PLAYER: <span id="profileName"></span></p><button id="changeName">تغيير الاسم</button><button id="editPlanBtn">✏️ تعديل الجدول</button><button id="logoutBtn" class="reset">تسجيل الخروج</button><div class="monthbox"><b>🌱 MONTH 1</b><br>Weeks 1–4</div><div class="monthbox"><b>⚡ MONTH 2</b><br>Weeks 5–8</div><div class="monthbox"><b>🏆 MONTH 3</b><br>Weeks 9–12</div><div class="monthbox"><b>📅 YOUR 12-WEEK RUN</b><br><span id="journeyWeek">Current: Week 1</span></div><div class="monthbox"><b id="journeyLevel">Level 1</b><br><span id="journeyXP">0 XP</span></div></aside><div id="questMain"><main id="app"><div class="wrap">
 <header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>STUDY QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
 <section class="stats" aria-label="إحصائيات التقدم"><div class="stat"><small>إجمالي الخبرة</small><strong><span id="total">0</span> XP</strong></div><div class="stat"><small>المستوى الحالي</small><strong id="level">Level 1</strong></div><div class="stat"><small>التقدم للمستوى التالي</small><strong><span id="remain">1000</span> XP</strong><div class="bar"><span id="progress"></span></div></div></section>
-<h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
+<section class="questWallet"><div><small>رصيدك في المتجر</small><b>🪙 <span id="coinBalance">0</span> Coins</b><small id="coinHint">أنجز المهام واجمع الكوينز</small></div><button type="button" id="openShop">🛒 افتح المتجر</button></section>
+<div id="shopPanel" aria-label="متجر Study Quest"><div class="shopInner"><div class="shopTop"><div><div class="kicker">REWARD STORE</div><h2 style="margin:5px 0">🛒 متجر Study Quest</h2><div>رصيدك: 🪙 <b id="shopCoins">0</b></div></div><button type="button" id="closeShop">✕ إغلاق</button></div><p class="plannerMeta">اشتري إضافات شكلية بالكوينز اللي بتجمعها من إنجاز مهامك.</p><div class="shopGrid">
+<article class="shopItem"><div class="shopArt">🌌</div><b>خلفية المجرة</b><p>خلفية بنفسجية للموقع</p><button data-buy="galaxy" data-cost="80">🪙 80 — شراء</button></article>
+<article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#047857,#34d399)">🌿</div><b>ثيم الطبيعة</b><p>ألوان خضراء هادئة</p><button data-buy="nature" data-cost="100">🪙 100 — شراء</button></article>
+<article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#9d174d,#f472b6)">💗</div><b>ثيم Pink Pop</b><p>ألوان وردية مميزة</p><button data-buy="pink" data-cost="120">🪙 120 — شراء</button></article>
+<article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#854d0e,#fbbf24)">👑</div><b>إطار الملك</b><p>إطار ذهبي للبروفايل</p><button data-buy="crown" data-cost="60">🪙 60 — شراء</button></article>
+<article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#334155,#94a3b8)">🤖</div><b>أفاتار روبوت</b><p>شارة روبوت للبروفايل</p><button data-buy="robot" data-cost="50">🪙 50 — شراء</button></article>
+<article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#075985,#67e8f9)">⚡</div><b>شارة البرق</b><p>شارة إنجاز إضافية</p><button data-buy="bolt" data-cost="40">🪙 40 — شراء</button></article>
+</div><div id="shopMessage" role="status"></div></div></div><h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
 <section class="days" id="days">
 <article class="day"><div class="dayhead"><h3>السبت</h3><span class="tag">ARABIC + CODE</span></div><div class="tasks">
 <div class="task"><input type="checkbox" data-xp="100" id="sat1"><label for="sat1">04:00–06:00 محاضرة العربي — الجزء الأول</label><span class="xp">+100 XP</span></div>
@@ -485,4 +519,57 @@ readState();applyWeek();refreshTrophies(false);
  });
 })();
 </script>
-<script>(()=>{const key='study-quest-theme',btn=document.getElementById('themeToggle');if(!btn)return;const apply=mode=>{document.body.classList.toggle('light-theme',mode==='light');btn.textContent=mode==='light'?'🌙':'☀️';btn.title=mode==='light'?'التبديل للوضع الداكن':'التبديل للوضع الفاتح';btn.setAttribute('aria-label',btn.title)};let saved='dark';try{saved=localStorage.getItem(key)||'dark'}catch(e){}apply(saved);btn.addEventListener('click',()=>{const next=document.body.classList.contains('light-theme')?'dark':'light';apply(next);try{localStorage.setItem(key,next)}catch(e){}})})();</script></body></html>
+<script>(()=>{const key='study-quest-theme',btn=document.getElementById('themeToggle');if(!btn)return;const apply=mode=>{document.body.classList.toggle('light-theme',mode==='light');btn.textContent=mode==='light'?'🌙':'☀️';btn.title=mode==='light'?'التبديل للوضع الداكن':'التبديل للوضع الفاتح';btn.setAttribute('aria-label',btn.title)};let saved='dark';try{saved=localStorage.getItem(key)||'dark'}catch(e){}apply(saved);btn.addEventListener('click',()=>{const next=document.body.classList.contains('light-theme')?'dark':'light';apply(next);try{localStorage.setItem(key,next)}catch(e){}})})();</script><script>
+(()=> {
+ const $=id=>document.getElementById(id);
+ const storeKey='study-quest-economy-v1';
+ let economy={earnedMilestones:0,spent:0,owned:[],equipped:null};
+ try{economy=Object.assign(economy,JSON.parse(localStorage.getItem(storeKey)||'{}'))}catch(e){}
+ const save=()=>{localStorage.setItem(storeKey,JSON.stringify(economy));render()};
+ const xp=()=>Number(($('total')?.textContent||'0').replace(/[^0-9]/g,''))||0;
+ const balance=()=>Math.max(0,economy.earnedMilestones*10-economy.spent);
+ function render(){
+   $('coinBalance').textContent=balance();$('shopCoins').textContent=balance();
+   document.querySelectorAll('[data-buy]').forEach(btn=>{
+     const id=btn.dataset.buy,owned=economy.owned.includes(id);
+     btn.textContent=owned?(economy.equipped===id?'✓ مُفعّل':'✓ تم الشراء'):'🪙 '+btn.dataset.cost+' — شراء';
+     btn.disabled=!owned&&balance()<Number(btn.dataset.cost);
+     btn.style.opacity=btn.disabled?'.55':'1';
+   });
+ }
+ function award(){
+   const milestones=Math.floor(xp()/100);
+   if(milestones>economy.earnedMilestones){
+     const gained=(milestones-economy.earnedMilestones)*10;
+     economy.earnedMilestones=milestones;
+     $('coinHint').textContent='كسبت '+gained+' Coins جديدة! 🎉';
+     save();
+   } else render();
+ }
+ const themes={galaxy:'galaxy',nature:'nature',pink:'pink'};
+ function equip(id){
+   document.body.classList.remove('shop-galaxy','shop-nature','shop-pink');
+   if(themes[id])document.body.classList.add('shop-'+themes[id]);
+   economy.equipped=themes[id]?id:null;
+   save();
+ }
+ $('openShop').addEventListener('click',()=>{$('shopPanel').classList.add('active');render()});
+ $('closeShop').addEventListener('click',()=>$('shopPanel').classList.remove('active'));
+ $('shopPanel').addEventListener('click',e=>{if(e.target===$('shopPanel'))$('shopPanel').classList.remove('active')});
+ document.querySelectorAll('[data-buy]').forEach(btn=>btn.addEventListener('click',()=>{
+   const id=btn.dataset.buy,cost=Number(btn.dataset.cost);
+   if(economy.owned.includes(id)){if(themes[id])equip(id);else{$('shopMessage').textContent='العنصر ده اتضاف لمشترياتك بالفعل.'}return}
+   if(balance()<cost){$('shopMessage').textContent='لسه محتاج كوينز أكتر عشان تشتري العنصر ده.';return}
+   economy.spent+=cost;economy.owned.push(id);
+   if(themes[id]){document.body.classList.add('shop-'+themes[id]);economy.equipped=id}
+   $('shopMessage').textContent='مبروك! اشتريت العنصر بنجاح 🎉';save();
+ }));
+ document.addEventListener('change',e=>{
+   if(e.target.matches('input[type=checkbox][data-xp],input[data-custom-id]'))setTimeout(award,80);
+ });
+ document.addEventListener('click',e=>{if(e.target.closest('#nextWeek'))setTimeout(award,100)});
+ const oldSync=window.bqSync;
+ // Coins and purchases are stored on this browser; task XP remains in the existing planner.
+ render();setTimeout(award,500);
+})();
+</script></body></html>
