@@ -210,23 +210,20 @@ readState();applyWeek();refreshTrophies(false);
    },500);
  };
  function buildPlanner(s,customProgress={}){
-   const selected=s.days||[],hrs=s.hours||3,allTasks=[];
-   (s.subjects||[]).forEach((subject,si)=>(subject.items||[]).forEach((item,ii)=>allTasks.push({subject:subject.name,item,id:'custom_'+si+'_'+ii})));
-   let html='';
-   selected.forEach((day,di)=>{
-     const tasks=allTasks.filter((t,i)=>i%selected.length===di);
-     html+='<article class="plannerday"><h3>🗓️ '+escapeHtml(day)+'</h3><div class="plannerMeta">'+hrs+' ساعات متاحة للمذاكرة</div>'+
-       (tasks.length?tasks.map((task,i)=>'<div class="plannerTask"><input type="checkbox" data-custom-id="'+task.id+'" '+(customProgress[task.id]?'checked':'')+'><label><b>'+escapeHtml(task.subject)+'</b> — '+escapeHtml(task.item)+' <small class="plannerMeta"> • جلسة '+((i%hrs)+1)+' (حوالي ساعة)</small></label><span class="xp">+100 XP</span></div>').join(''):'<p class="plannerMeta">يوم راحة أو وقت مرن.</p>')+'</article>';
-   });
-   $('days').innerHTML=html;$('weekLabel').textContent='جدولك الشخصي';
-   $('weekInfo').textContent='جدول مخصص لـ '+current+' • '+(s.daysPerWeek||selected.length)+' أيام أسبوعيًا • '+hrs+' ساعات يوميًا • '+allTasks.length+' مهمة';
+   const days=s.schedule?.days?.length?s.schedule.days.map(d=>d.name):(s.days||[]),hrs=s.hours||3,all=[];
+   if(s.schedule?.days?.length)s.schedule.days.forEach((d,di)=>(d.tasks||[]).forEach((t,ti)=>all.push({...t,day:d.name,id:'photo_'+di+'_'+ti})));
+   else (s.subjects||[]).forEach((sub,si)=>(sub.items||[]).forEach((item,ii)=>all.push({subject:sub.name,text:item,day:days[ii%Math.max(1,days.length)],id:'custom_'+si+'_'+ii})));
+   $('days').innerHTML=days.map(day=>{
+     const tasks=all.filter(t=>t.day===day);
+     return '<article class="plannerday"><h3>🗓️ '+escapeHtml(day)+'</h3><div class="plannerMeta">'+(s.schedule?'محتوى مستخرج من صورة جدولك':'وقت متاح: '+hrs+' ساعات')+'</div>'+
+       (tasks.length?tasks.map(t=>'<div class="plannerTask"><input type="checkbox" data-custom-id="'+t.id+'" '+(customProgress[t.id]?'checked':'')+'><label>'+(t.time?'<b>'+escapeHtml(t.time)+'</b> — ':'')+(t.subject?'<b>'+escapeHtml(t.subject)+'</b> — ':'')+escapeHtml(t.text||'')+'</label><span class="xp">+100 XP</span></div>').join(''):'<p class="plannerMeta">لا توجد مهام مسجلة.</p>')+'</article>';
+   }).join('');
+   $('weekLabel').textContent='جدولك الشخصي';$('weekInfo').textContent='جدولك مقسّم إلى '+days.length+' أيام و'+all.length+' بند';
    document.querySelectorAll('[data-custom-id]').forEach(b=>b.addEventListener('change',()=>{
      profile.progress=profile.progress||{};profile.progress.customProgress=profile.progress.customProgress||{};
      profile.progress.customProgress[b.dataset.customId]=b.checked;
-     const count=Object.values(profile.progress.customProgress).filter(Boolean).length,xp=count*100;
-     $('total').textContent=xp;$('level').textContent='Level '+(Math.floor(xp/1000)+1);
-     $('remain').textContent=(1000-xp%1000)+' XP';$('progress').style.width=(xp%1000)/10+'%';
-     bqSync();
+     const xp=Object.values(profile.progress.customProgress).filter(Boolean).length*100;
+     $('total').textContent=xp;$('level').textContent='Level '+(Math.floor(xp/1000)+1);$('remain').textContent=(1000-xp%1000)+' XP';$('progress').style.width=(xp%1000)/10+'%';bqSync();
    }));
  }
  async function createAccount(){
@@ -274,7 +271,7 @@ readState();applyWeek();refreshTrophies(false);
  };
  $('addSubjectBtn').onclick=()=>addSubjectRow();addSubjectRow();
   const photoInput=$('schedulePhoto'),photoPreview=$('photoPreview'),photoStatus=$('photoStatus');
-  let selectedSchedulePhoto=null;
+  let selectedSchedulePhoto=null, importedSchedule=null;
   photoInput.addEventListener('change',()=>{
     selectedSchedulePhoto=photoInput.files&&photoInput.files[0]||null;
     if(!selectedSchedulePhoto){photoPreview.style.display='none';return}
@@ -292,24 +289,31 @@ readState();applyWeek();refreshTrophies(false);
       }});
       const lines=result.data.text.split(/\\r?\\n/).map(x=>x.replace(/[|•·]+/g,' ').replace(/\\s+/g,' ').trim()).filter(x=>x.length>1);
       if(!lines.length)throw new Error('مش قادر أقرأ نص واضح. جرّب صورة أوضح.');
-      const row=document.querySelector('.subjectEditorRow');
-      if(row){row.querySelector('.subjectName').value='جدول مستخرج من الصورة';row.querySelector('.subjectItems').value=lines.join('\\n')}
-      else addSubjectRow('جدول مستخرج من الصورة',lines.join('\\n'));
-      photoStatus.textContent='تم استخراج '+lines.length+' سطر. راجع النص وعدّل أي أخطاء قبل حفظ الجدول.';
-      $('subjectsEditor').scrollIntoView({behavior:'smooth',block:'start'});
+      const names=['السبت','الأحد','الاحد','الاثنين','الإثنين','الثلاثاء','الأربعاء','الاربعاء','الخميس','الجمعة'],norm={'الاحد':'الأحد','الإثنين':'الاثنين','الاربعاء':'الأربعاء'};
+      const parsed=[];let active=null;
+      lines.forEach(line=>{
+        const found=names.find(n=>line.includes(n));
+        if(found){const day=norm[found]||found;active=parsed.find(d=>d.name===day);if(!active){active={name:day,tasks:[]};parsed.push(active)}}
+        else {if(!active){active={name:'غير محدد اليوم',tasks:[]};parsed.push(active)}
+          const m=line.match(/[٠-٩0-9]{1,2}[:٫][٠-٩0-9]{2}(?:\\s*[-–—إلى]+\\s*[٠-٩0-9]{1,2}[:٫][٠-٩0-9]{2})?/);
+          const time=m?m[0].replace('٫',':'):'';const text=line.replace(m?m[0]:'','').replace(/^[-:：\\s]+|[-:：\\s]+$/g,'').trim();
+          if(text||time)active.tasks.push({time,text:text||'موعد',subject:''});
+        }
+      });
+      if(!parsed.length)parsed.push({name:'الجدول',tasks:lines.map(text=>({time:'',text,subject:''}))});
+      importedSchedule={days:parsed};
+      $('subjectsEditor').innerHTML='<div class="subjectEditorRow"><b>تم تقسيم الصورة إلى '+parsed.length+' أيام و'+parsed.reduce((n,d)=>n+d.tasks.length,0)+' بند.</b><p class="plannerMeta">بعد الحفظ ستظهر الأيام كبطاقات مستقلة، وكل بند في سطر منفصل.</p></div>';
+      photoStatus.textContent='تم تجهيز الجدول. اضغط إنشاء جدولي لعرضه.';$('subjectsEditor').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(e){photoStatus.textContent='تعذر استخراج الجدول: '+e.message}
     finally{btn.disabled=false}
   };
  $('saveSetupBtn').onclick=async()=>{
-   const subjects=[...document.querySelectorAll('.subjectEditorRow')].map(row=>({
-     name:row.querySelector('.subjectName').value.trim(),
-     items:row.querySelector('.subjectItems').value.split(/[،,\n]+/).map(x=>x.trim()).filter(Boolean)
-   })).filter(s=>s.name&&s.items.length);
+   const subjects=[...document.querySelectorAll('.subjectEditorRow')].filter(row=>row.querySelector('.subjectName')&&row.querySelector('.subjectItems')).map(row=>({name:row.querySelector('.subjectName').value.trim(),items:row.querySelector('.subjectItems').value.split(/[،,\\n]+/).map(x=>x.trim()).filter(Boolean)})).filter(v=>v.name&&v.items.length);
    const days=[...document.querySelectorAll('#dayChoices input:checked')].map(x=>x.value);
    const hours=Number($('userHours').value),daysPerWeek=Number($('userDays').value);
-   if(!subjects.length)return setError('اكتب مادة واحدة على الأقل، واكتب داخلها مهمة واحدة على الأقل.');
+   if(!importedSchedule&&!subjects.length)return setError('اكتب مادة واحدة على الأقل، أو ارفع صورة جدولك.');
    if(!days.length||daysPerWeek<1||daysPerWeek>7||hours<1||hours>12||daysPerWeek>days.length)return setError('راجع الأيام وعدد الساعات.');
-   const setup={role:$('userRole').value,subjects,days:days.slice(0,daysPerWeek),daysPerWeek,hours};
+   const setup={role:$('userRole').value,subjects,days:importedSchedule?importedSchedule.days.map(d=>d.name):days.slice(0,daysPerWeek),daysPerWeek:importedSchedule?importedSchedule.days.length:daysPerWeek,hours,...(importedSchedule?{schedule:importedSchedule}:{})};
    const {error}=await client.from('profiles').update({planner:{setup},updated_at:new Date().toISOString()}).eq('id',profile.id);
    if(error)return setError('تعذر حفظ الجدول: '+error.message);
    profile.planner={setup};$('accountGate').hidden=true;
