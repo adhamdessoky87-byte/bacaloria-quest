@@ -74,9 +74,11 @@ Deno.serve(async (req) => {
       parts: [{ text: m.content }],
     }));
 
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" +
-      encodeURIComponent(key);
+    const modelFallbacks = [
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+    ];
 
     const requestBody = JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
@@ -87,29 +89,41 @@ Deno.serve(async (req) => {
     let response: Response | null = null;
     let lastNetworkError: unknown = null;
 
-    // Retry temporary capacity, rate-limit, and gateway errors with exponential backoff.
-    const retryableStatuses = new Set([408, 429, 500, 502, 503, 504]);
-    for (let attempt = 0; attempt < 5; attempt++) {
-      try {
-        response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: requestBody,
-        });
-        if (!retryableStatuses.has(response.status) || attempt === 4) break;
-        const delay = Math.min(1000 * 2 ** attempt, 16000) + Math.floor(Math.random() * 500);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      } catch (error) {
-        lastNetworkError = error;
-        if (attempt === 4) break;
-        const delay = Math.min(1000 * 2 ** attempt, 16000) + Math.floor(Math.random() * 500);
-        await new Promise((resolve) => setTimeout(resolve, delay));
+    // Try current stable model first, then compatible stable Flash fallbacks.
+    for (const model of modelFallbacks) {
+      const url =
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` +
+        encodeURIComponent(key);
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: requestBody,
+          });
+
+          // Move to the next model if this one is overloaded or unavailable.
+          if (response.ok) break;
+          if (![404, 429, 500, 502, 503, 504].includes(response.status)) break;
+        } catch (error) {
+          lastNetworkError = error;
+        }
+
+        if (attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 1200));
+        }
+      }
+
+      if (response?.ok) break;
+      if (response && ![404, 429, 500, 502, 503, 504].includes(response.status)) {
+        break;
       }
     }
 
     if (!response) {
       console.error("Gemini network request failed:", lastNetworkError);
-      return json({ error: "تعذر الوصول إلى Gemini بعد عدة محاولات. جرّب مرة أخرى بعد قليل." }, 503);
+      return json({ error: "تعذر الوصول إلى Gemini. حاول مرة أخرى بعد قليل." }, 503);
     }
 
     const result = await response.json();
