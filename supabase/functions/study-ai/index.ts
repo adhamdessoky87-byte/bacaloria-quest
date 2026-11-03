@@ -85,20 +85,31 @@ Deno.serve(async (req) => {
     });
 
     let response: Response | null = null;
-    // Retry temporary Gemini capacity errors with short backoff.
-    for (let attempt = 0; attempt < 3; attempt++) {
-      response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: requestBody,
-      });
+    let lastNetworkError: unknown = null;
 
-      if (response.status !== 503 || attempt === 2) break;
-      await new Promise((resolve) => setTimeout(resolve, 1500 * (attempt + 1)));
+    // Retry temporary capacity, rate-limit, and gateway errors with exponential backoff.
+    const retryableStatuses = new Set([408, 429, 500, 502, 503, 504]);
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: requestBody,
+        });
+        if (!retryableStatuses.has(response.status) || attempt === 4) break;
+        const delay = Math.min(1000 * 2 ** attempt, 16000) + Math.floor(Math.random() * 500);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } catch (error) {
+        lastNetworkError = error;
+        if (attempt === 4) break;
+        const delay = Math.min(1000 * 2 ** attempt, 16000) + Math.floor(Math.random() * 500);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
 
     if (!response) {
-      return json({ error: "تعذر الاتصال بخدمة Gemini. حاول مرة أخرى." }, 503);
+      console.error("Gemini network request failed:", lastNetworkError);
+      return json({ error: "تعذر الوصول إلى Gemini بعد عدة محاولات. جرّب مرة أخرى بعد قليل." }, 503);
     }
 
     const result = await response.json();
