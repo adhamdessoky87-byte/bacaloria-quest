@@ -74,19 +74,32 @@ Deno.serve(async (req) => {
       parts: [{ text: m.content }],
     }));
 
-    const response = await fetch(
+    const url =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" +
-        encodeURIComponent(key),
-      {
+      encodeURIComponent(key);
+
+    const requestBody = JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents,
+      generationConfig: { maxOutputTokens: 900 },
+    });
+
+    let response: Response | null = null;
+    // Retry temporary Gemini capacity errors with short backoff.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents,
-          generationConfig: { maxOutputTokens: 900 },
-        }),
-      }
-    );
+        body: requestBody,
+      });
+
+      if (response.status !== 503 || attempt === 2) break;
+      await new Promise((resolve) => setTimeout(resolve, 1500 * (attempt + 1)));
+    }
+
+    if (!response) {
+      return json({ error: "تعذر الاتصال بخدمة Gemini. حاول مرة أخرى." }, 503);
+    }
 
     const result = await response.json();
 
