@@ -137,6 +137,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
     <b>🗓️ ابنِ جدولك بنفسك</b>
     <p class="manualHint">اختار الأيام فوق، وبعدها أضف كل مهمة وحدد يومها ووقتها ومادتها. تقدر تضيف أو تحذف مهام براحتك.</p>
     <div id="manualTasks"></div>
+    <div class="subjectEditorRow" style="margin-top:12px"><b>📋 استيراد جدول كامل بالنص</b><p class="manualHint">الصق الجدول مرة واحدة. اكتب اسم اليوم في سطر مستقل، وكل مهمة في سطر بالشكل: 04:00 AM – 08:00 AM | Arabic Lecture</p><textarea id="fullScheduleText" style="width:100%;min-height:190px;padding:12px;border-radius:10px;border:1px solid #46558b;background:#10172f;color:white;font:inherit" placeholder="SATURDAY\n04:00 AM – 08:00 AM | Arabic Lecture\n08:00 AM – 10:00 AM | Study Arabic\n\nSUNDAY\n..."></textarea><button type="button" id="importTextScheduleBtn" style="margin-top:8px">استيراد الجدول بالكامل</button><div id="textImportStatus" class="manualHint" aria-live="polite"></div></div>
     <button type="button" id="addManualTaskBtn">＋ إضافة مهمة للجدول</button>
    </div>
    <label>كام ساعة تقدر تذاكر في اليوم؟</label><input id="userHours" type="number" min="1" max="12" value="3">
@@ -346,7 +347,7 @@ readState();applyWeek();refreshTrophies(false);
    else (s.subjects||[]).forEach((sub,si)=>(sub.items||[]).forEach((item,ii)=>all.push({subject:sub.name,text:item,day:days[ii%Math.max(1,days.length)],id:'custom_'+si+'_'+ii})));
    $('days').innerHTML=days.map(day=>{
      const tasks=all.filter(t=>t.day===day);
-     return '<article class="plannerday"><h3>🗓️ '+escapeHtml(day)+'</h3><div class="plannerMeta">'+(s.schedule?'محتوى مستخرج من صورة جدولك':'وقت متاح: '+hrs+' ساعات')+'</div>'+
+     return '<article class="plannerday"><h3>🗓️ '+escapeHtml(day)+'</h3><div class="plannerMeta">'+(s.schedule?'جدولك المستورد':'وقت متاح: '+hrs+' ساعات')+'</div>'+
        (tasks.length?tasks.map(t=>'<div class="plannerTask"><input type="checkbox" data-custom-id="'+t.id+'" '+(customProgress[t.id]?'checked':'')+'><label>'+(t.time?'<b>'+escapeHtml(t.time)+'</b> — ':'')+(t.subject?'<b>'+escapeHtml(t.subject)+'</b> — ':'')+escapeHtml(t.text||'')+'</label><span class="xp">+150 XP</span></div>').join(''):'<p class="plannerMeta">لا توجد مهام مسجلة.</p>')+'</article>';
    }).join('');
    $('weekLabel').textContent='جدولك الشخصي';$('weekInfo').textContent='جدولك مقسّم إلى '+days.length+' أيام و'+all.length+' بند';
@@ -413,7 +414,41 @@ readState();applyWeek();refreshTrophies(false);
    const del=document.createElement('button');del.type='button';del.textContent='حذف';del.onclick=()=>row.remove();
    row.append(daySel,tm,sub,txt,del);$('manualTasks').appendChild(row);
  }
- $('addManualTaskBtn').onclick=()=>addManualTask();
+ $('importTextScheduleBtn').onclick=()=>{
+   const raw=$('fullScheduleText').value.trim(),status=$('textImportStatus');
+   if(!raw){status.textContent='الصق الجدول أولاً.';return}
+   const dayMap=[
+    [/^(sat(urday)?|السبت)$/i,'السبت'],[/^(sun(day)?|الأحد|الاحد)$/i,'الأحد'],
+    [/^(mon(day)?|الاثنين|الإثنين)$/i,'الاثنين'],[/^(tue(sday)?|الثلاثاء)$/i,'الثلاثاء'],
+    [/^(wed(nesday)?|الأربعاء|الاربعاء)$/i,'الأربعاء'],[/^(thu(rsday)?|الخميس)$/i,'الخميس'],
+    [/^(fri(day)?|الجمعة)$/i,'الجمعة']
+   ];
+   const parsed=[];let active=null;
+   const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+   for(const line of lines){
+    const clean=line.replace(/^[-•*]\s*/,'');
+    const day=dayMap.find(([re])=>re.test(clean));
+    if(day){active={name:day[1],tasks:[]};parsed.push(active);continue}
+    if(!active){status.textContent='اكتب اسم اليوم قبل مهامه، مثل SATURDAY أو السبت.';return}
+    const m=clean.match(/((?:[0-9٠-٩]{1,2}:?[0-9٠-٩]{2})\s*(?:AM|PM)?\s*(?:[-–—]|to|إلى)\s*(?:[0-9٠-٩]{1,2}:?[0-9٠-٩]{2})\s*(?:AM|PM)?)/i);
+    const time=m?m[1].trim():'';
+    const rest=clean.replace(m?m[0]:'','').replace(/^\s*[|:：-]\s*/,'').trim();
+    if(!rest&&!time)continue;
+    const parts=rest.split(/\s*[|｜]\s*/);
+    const subject=parts.length>1?parts[0].trim():'';
+    const task=parts.length>1?parts.slice(1).join(' | ').trim():rest;
+    active.tasks.push({time,subject,text:task||subject||'مهمة'});
+   }
+   const valid=parsed.filter(d=>d.tasks.length);
+   if(!valid.length){status.textContent='ملقتش مهام واضحة. راجع تنسيق الأيام والسطور.';return}
+   importedSchedule={days:valid};
+   $('subjectsEditor').innerHTML='';
+   $('manualTasks').innerHTML='';
+   document.querySelectorAll('#dayChoices input').forEach(box=>box.checked=valid.some(d=>d.name===box.value));
+   $('userDays').value=valid.length;
+   status.textContent='تم استيراد '+valid.length+' أيام و'+valid.reduce((n,d)=>n+d.tasks.length,0)+' مهمة. اضغط «إنشاء جدولي» لحفظها في حسابك.';
+  };
+ $('addManualTaskBtn').onclick=()=>{importedSchedule=null;addManualTask()};
  document.querySelectorAll('#dayChoices input').forEach(x=>x.addEventListener('change',()=>document.querySelectorAll('.manualDay').forEach(s=>{const old=s.value,opts=[...document.querySelectorAll('#dayChoices input:checked')].map(b=>b.value);s.innerHTML=opts.map(d=>'<option value="'+escapeHtml(d)+'">'+escapeHtml(d)+'</option>').join('');if(opts.includes(old))s.value=old})));
 
   const photoInput=$('schedulePhoto'),photoPreview=$('photoPreview'),photoStatus=$('photoStatus');
