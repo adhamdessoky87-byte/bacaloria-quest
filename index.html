@@ -153,11 +153,20 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <div id="toolsBackdrop"></div>
 <aside id="toolsDrawer" aria-label="قائمة الأدوات">
  <div class="drawerHead"><div><div class="kicker">STUDY QUEST</div><h2 style="margin:5px 0">أدواتك</h2></div><button id="closeTools">✕</button></div>
+ <button class="drawerAction" data-open-tool="progress"><span>📊</span><b>تقدمي وإنجازاتي</b></button>
  <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
  <button class="drawerAction" data-open-tool="assistant"><span>🤖</span><b>AI Assistant</b></button>
  <button class="drawerAction" data-open-tool="spotify"><span>🎧</span><b>Spotify</b></button>
  <p class="smallprint">كل أدوات التركيز في مكان واحد.</p>
 </aside>
+<section class="toolPanel" id="progressPanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>📊 تقدمي الأسبوعي</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p class="plannerMeta" id="progressSummary">تابع إنجاز كل يوم ومهام الأسبوع هنا.</p>
+  <div class="stat" style="margin:14px 0"><small>إنجاز الأسبوع</small><strong id="weeklyProgressCount">0 / 0</strong><div class="bar"><span id="weeklyProgressBar"></span></div><p class="plannerMeta" id="weeklyRewardStatus">أكمل كل مهام الأسبوع لتحصل على 50 Coins 🪙</p></div>
+  <div id="dailyProgressList"></div>
+ </div>
+</section>
 <section class="toolPanel" id="pomodoroPanel">
  <div class="toolInner">
   <div class="toolTop"><h2>⏱️ Pomodoro</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
@@ -527,7 +536,36 @@ readState();applyWeek();refreshTrophies(false);
  try{economy=Object.assign(economy,JSON.parse(localStorage.getItem(storeKey)||'{}'))}catch(e){}
  const save=()=>{localStorage.setItem(storeKey,JSON.stringify(economy));render()};
  const xp=()=>Number(($('total')?.textContent||'0').replace(/[^0-9]/g,''))||0;
- const balance=()=>Math.max(0,economy.earnedMilestones*10-economy.spent);
+ const balance=()=>Math.max(0,(economy.earnedMilestones*10)+(Number(economy.weeklyBonuses)||0)-economy.spent);
+ const progressKey='bacaloria-quest-progress-v3';
+ function taskGroups(){
+   return [...document.querySelectorAll('#days .day, #days .plannerday')].map((day,i)=>{
+     const tasks=[...day.querySelectorAll('input[type="checkbox"]')];
+     return {name:day.querySelector('h3')?.textContent?.trim()||('اليوم '+(i+1)),tasks};
+   }).filter(g=>g.tasks.length);
+ }
+ function refreshWeeklyProgress(){
+   const groups=taskGroups(),all=groups.flatMap(g=>g.tasks),done=all.filter(t=>t.checked).length;
+   const count=$('weeklyProgressCount'),bar=$('weeklyProgressBar'),status=$('weeklyRewardStatus'),list=$('dailyProgressList');
+   if(!count||!bar||!status||!list)return;
+   count.textContent=done+' / '+all.length+' مهمة';
+   bar.style.width=(all.length?done/all.length*100:0)+'%';
+   $('progressSummary').textContent='الأسبوع الحالي: '+(window.state?.currentWeek||1)+' • '+groups.filter(g=>g.tasks.every(t=>t.checked)).length+' من '+groups.length+' أيام مكتملة';
+   list.innerHTML=groups.map(g=>{
+     const n=g.tasks.filter(t=>t.checked).length,complete=n===g.tasks.length;
+     return '<div class="monthbox" style="margin:9px 0"><b>'+(complete?'✅ ':'📘 ')+g.name+'</b><div class="plannerMeta">'+n+' / '+g.tasks.length+' مهام مكتملة</div><div class="bar"><span style="width:'+(n/g.tasks.length*100)+'%"></span></div></div>';
+   }).join('');
+   const week=window.state?.currentWeek||1,claimed=Array.isArray(economy.weeklyBonusWeeks)&&economy.weeklyBonusWeeks.includes(week);
+   if(all.length&&done===all.length&&!claimed){
+     economy.weeklyBonusWeeks=economy.weeklyBonusWeeks||[];economy.weeklyBonusWeeks.push(week);
+     economy.weeklyBonuses=(Number(economy.weeklyBonuses)||0)+50;
+     $('coinHint').textContent='مكافأة الأسبوع: +50 Coins! 🎉';
+     localStorage.setItem(storeKey,JSON.stringify(economy));
+     $('shopMessage').textContent='مبروك! خلصت كل مهام الأسبوع وكسبت 50 Coins 🪙';
+   }
+   status.textContent=claimed|| (all.length&&done===all.length)?'🎉 حصلت على مكافأة الأسبوع +50 Coins':'أكمل كل مهام الأسبوع لتحصل على 50 Coins 🪙';
+   render();
+ }
  function render(){
    $('coinBalance').textContent=balance();$('shopCoins').textContent=balance();
    document.querySelectorAll('[data-buy]').forEach(btn=>{
@@ -565,11 +603,13 @@ readState();applyWeek();refreshTrophies(false);
    $('shopMessage').textContent='مبروك! اشتريت العنصر بنجاح 🎉';save();
  }));
  document.addEventListener('change',e=>{
-   if(e.target.matches('input[type=checkbox][data-xp],input[data-custom-id]'))setTimeout(award,80);
+   if(e.target.matches('#days input[type=checkbox]'))setTimeout(()=>{award();refreshWeeklyProgress()},80);
  });
  document.addEventListener('click',e=>{if(e.target.closest('#nextWeek'))setTimeout(award,100)});
  const oldSync=window.bqSync;
  // Coins and purchases are stored on this browser; task XP remains in the existing planner.
- render();setTimeout(award,500);
+ render();setTimeout(()=>{award();refreshWeeklyProgress()},500);
+ document.getElementById('nextWeek')?.addEventListener('click',()=>setTimeout(refreshWeeklyProgress,120));
+ window.refreshStudyQuestProgress=refreshWeeklyProgress;
 })();
 </script></body></html>
