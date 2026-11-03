@@ -344,7 +344,7 @@ function weekData(){if(!state.weeks[state.currentWeek])state.weeks[state.current
 function applyWeek(){const data=weekData();boxes.forEach(b=>{b.checked=!!data[b.id];b.closest('.task').classList.toggle('done',b.checked)});update()}
 function update(){const allXp=Object.values(state.weeks).reduce((sum,w)=>sum+boxes.reduce((s,b)=>s+(w[b.id]?Number(b.dataset.xp):0),0),0);const currentXp=boxes.reduce((s,b)=>s+(b.checked?Number(b.dataset.xp):0),0);const level=Math.floor(allXp/1000)+1;const progress=allXp%1000;document.getElementById('total').textContent=allXp;document.getElementById('level').textContent='Level '+level;document.getElementById('remain').textContent=(1000-progress)+' XP';document.getElementById('progress').style.width=(progress/10)+'%';document.getElementById('weekLabel').textContent='Week '+state.currentWeek;document.getElementById('weekInfo').textContent='XP هذا الأسبوع: '+currentXp+' • إجمالي XP: '+allXp}
 boxes.forEach(b=>b.addEventListener('change',()=>{weekData()[b.id]=b.checked;b.closest('.task').classList.toggle('done',b.checked);save();update()}));
-document.getElementById('nextWeek').addEventListener('click',()=>{if(!confirm('تبدأ Week '+(state.currentWeek+1)+'؟ سيتم حفظ تقدم الأسبوع الحالي كما هو.'))return;state.currentWeek++;save();applyWeek();window.scrollTo({top:0,behavior:'smooth'})});
+document.getElementById('nextWeek').addEventListener('click',()=>{if(!confirm('تبدأ Week '+(state.currentWeek+1)+'؟ سيتم حفظ تقدم الأسبوع الحالي كما هو وبدء مهام جديدة بدون علامات إنجاز.'))return;state.currentWeek++;save();applyWeek();if(profile?.planner?.setup){const byWeek=profile.progress?.customProgressByWeek||{};buildPlanner(profile.planner.setup,byWeek[String(state.currentWeek)]||{});}window.scrollTo({top:0,behavior:'smooth'})});
 document.getElementById('reset').addEventListener('click',()=>{if(confirm('تمسح علامات الأسبوع الحالي فقط؟')){state.weeks[state.currentWeek]={};save();applyWeek()}});
 document.getElementById('all').addEventListener('click',()=>{boxes.forEach(b=>{weekData()[b.id]=false;b.checked=false;b.closest('.task').classList.remove('done')});save();update()});
 function formatTimes(root){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){node.nodeValue=node.nodeValue.replace(/\b(\d{1,2}):(\d{2})\b/g,(match,h,m)=>{h=Number(h);const suffix=h<12?'AM':'PM';const hour=h%12||12;return hour+':'+m+' '+suffix})}}
@@ -405,7 +405,7 @@ readState();applyWeek();refreshTrophies(false);
    if(p.achievements)localStorage.setItem('bacaloria-quest-achievements-v1',JSON.stringify(p.achievements));
    if(p.playerName)localStorage.setItem('bacaloria-quest-player-v1',p.playerName);
    $('profileName').textContent=p.playerName||data.username;
-   if(data.planner&&data.planner.setup){buildPlanner(data.planner.setup,p.customProgress||{});$('accountGate').hidden=true}
+   if(data.planner&&data.planner.setup){const byWeek=p.customProgressByWeek||{};buildPlanner(data.planner.setup,byWeek[String(state.currentWeek)]||p.customProgress||{});$('accountGate').hidden=true}
    else showSetup();
    refreshTrophies(false);
  }
@@ -417,7 +417,7 @@ readState();applyWeek();refreshTrophies(false);
        weeklyState:(()=>{try{return JSON.parse(localStorage.getItem('bacaloria-quest-progress-v3')||'{}')}catch(e){return {}}})(),
        achievements:(()=>{try{return JSON.parse(localStorage.getItem('bacaloria-quest-achievements-v1')||'{}')}catch(e){return {}}})(),
        playerName:localStorage.getItem('bacaloria-quest-player-v1')||current,
-       customProgress:profile.progress?.customProgress||{}
+       customProgressByWeek:profile.progress?.customProgressByWeek||{},customProgress:profile.progress?.customProgress||{}
      };
      const {error}=await client.from('profiles').update({progress,updated_at:new Date().toISOString()}).eq('id',profile.id);
      if(error)console.error('Cloud sync failed:',error.message);else profile.progress=progress;
@@ -434,9 +434,9 @@ readState();applyWeek();refreshTrophies(false);
    }).join('');
    $('weekLabel').textContent='جدولك الشخصي';$('weekInfo').textContent='جدولك مقسّم إلى '+days.length+' أيام و'+all.length+' بند';
    document.querySelectorAll('[data-custom-id]').forEach(b=>b.addEventListener('change',()=>{
-     profile.progress=profile.progress||{};profile.progress.customProgress=profile.progress.customProgress||{};
-     profile.progress.customProgress[b.dataset.customId]=b.checked;
-     const xp=Object.values(profile.progress.customProgress).filter(Boolean).length*100;
+     profile.progress=profile.progress||{};profile.progress.customProgressByWeek=profile.progress.customProgressByWeek||{};const wk=String(state.currentWeek);profile.progress.customProgressByWeek[wk]=profile.progress.customProgressByWeek[wk]||{};
+     profile.progress.customProgressByWeek[wk][b.dataset.customId]=b.checked;
+     const xp=Object.values(profile.progress.customProgressByWeek).reduce((sum,w)=>sum+Object.values(w||{}).filter(Boolean).length*150,0);
      $('total').textContent=xp;$('level').textContent='Level '+(Math.floor(xp/1000)+1);$('remain').textContent=(1000-xp%1000)+' XP';$('progress').style.width=(xp%1000)/10+'%';bqSync();
    }));
  }
