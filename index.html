@@ -139,8 +139,8 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 <section class="toolPanel" id="assistantPanel">
  <div class="toolInner">
   <div class="toolTop"><h2>🤖 AI Assistant</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <p class="plannerMeta">اسأل داخل Study Quest، وبدّل بين ChatGPT وGemini وقت ما تحب.</p>
-  <div class="aiChoice"><button id="chooseChatGPT" class="selected">ChatGPT</button><button id="chooseGemini">Gemini</button></div>
+  <p class="plannerMeta">مساعدك الدراسي الذكي داخل Study Quest، يعمل بواسطة Gemini.</p>
+  <div class="aiChoice"><button id="chooseGemini" class="selected">Gemini</button></div>
   <div id="aiChatLog" class="aiChatLog" aria-live="polite"><div class="aiBubble assistant">أهلًا! أنا مساعد Study Quest. اسألني عن دروسك أو خطتك الدراسية. ✨</div></div>
   <label for="aiPrompt">رسالتك</label>
   <textarea id="aiPrompt" class="toolField" rows="3" placeholder="اكتب سؤالك هنا..."></textarea>
@@ -461,10 +461,8 @@ readState();applyWeek();refreshTrophies(false);
  $('timerPause').addEventListener('click',()=>{stop();$('timerStart').textContent='استكمال';});
  $('timerReset').addEventListener('click',reset);render();
  // In-page AI chat. Provider keys stay in Supabase Edge Function secrets.
- let provider='chatgpt',chatHistory=[],aiBusy=false;
- const setProvider=p=>{provider=p;$('chooseChatGPT').classList.toggle('selected',p==='chatgpt');$('chooseGemini').classList.toggle('selected',p==='gemini');$('aiNotice').textContent='المساعد المختار: '+(p==='chatgpt'?'ChatGPT':'Gemini')+'. محادثتك مستمرة داخل Study Quest.'};
- $('chooseChatGPT').addEventListener('click',()=>setProvider('chatgpt'));
- $('chooseGemini').addEventListener('click',()=>setProvider('gemini'));
+ let chatHistory=[],aiBusy=false;
+ $('aiNotice').textContent='المساعد يعمل بواسطة Gemini. محادثتك مستمرة داخل Study Quest.';
  function addBubble(text,who){const el=document.createElement('div');el.className='aiBubble '+who;el.textContent=text;$('aiChatLog').appendChild(el);$('aiChatLog').scrollTop=$('aiChatLog').scrollHeight;return el}
  async function sendAIMessage(){
    const prompt=$('aiPrompt').value.trim();if(!prompt||aiBusy)return;
@@ -475,10 +473,10 @@ readState();applyWeek();refreshTrophies(false);
      const session=await window.supabase.createClient('https://xyaogsqqasgmrximzgaf.supabase.co','sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_').auth.getSession();
      const token=session.data&&session.data.session&&session.data.session.access_token;
      if(!token)throw new Error('سجّل الدخول أولًا لاستخدام المساعد.');
-     const response=await fetch('https://xyaogsqqasgmrximzgaf.supabase.co/functions/v1/study-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':'sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_'},body:JSON.stringify({provider,messages:chatHistory.slice(-12)})});
+     const response=await fetch('https://xyaogsqqasgmrximzgaf.supabase.co/functions/v1/study-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':'sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_'},body:JSON.stringify({provider:'gemini',messages:chatHistory.slice(-12)})});
      const data=await response.json();if(!response.ok)throw new Error(data.error||'تعذر الحصول على رد.');
      waiting.textContent=data.reply||'لم يصل رد من المساعد.';chatHistory.push({role:'assistant',content:waiting.textContent});
-   }catch(e){waiting.classList.add('error');waiting.textContent='المساعد غير جاهز حاليًا: '+e.message+'\nتأكد من نشر study-ai وإضافة مفاتيح OPENAI_API_KEY و GEMINI_API_KEY في Supabase.'}
+   }catch(e){waiting.classList.add('error');waiting.textContent='المساعد غير جاهز حاليًا: '+e.message+'\nتأكد من نشر study-ai وإضافة GEMINI_API_KEY في Supabase.'}
    finally{aiBusy=false;$('sendAI').disabled=false;$('sendAI').textContent='إرسال الرسالة';}
  }
  $('sendAI').addEventListener('click',sendAIMessage);
