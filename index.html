@@ -497,7 +497,7 @@ readState();applyWeek();refreshTrophies(false);
  $('closeTools').addEventListener('click',closeDrawer);backdrop.addEventListener('click',closeDrawer);
  function closePanels(){document.querySelectorAll('.toolPanel').forEach(p=>p.classList.remove('active'))}
  document.querySelectorAll('[data-open-tool]').forEach(b=>b.addEventListener('click',()=>{
-   closeDrawer();closePanels();$(b.dataset.openTool+'Panel').classList.add('active');
+   closeDrawer();closePanels();$(b.dataset.openTool+'Panel').classList.add('active');if(b.dataset.openTool==='progress'&&window.refreshStudyQuestProgress)window.refreshStudyQuestProgress();
  }));
  document.querySelectorAll('[data-close-tool]').forEach(b=>b.addEventListener('click',closePanels));
  // Customizable Pomodoro timer
@@ -550,12 +550,12 @@ readState();applyWeek();refreshTrophies(false);
    if(!count||!bar||!status||!list)return;
    count.textContent=done+' / '+all.length+' مهمة';
    bar.style.width=(all.length?done/all.length*100:0)+'%';
-   $('progressSummary').textContent='الأسبوع الحالي: '+(window.state?.currentWeek||1)+' • '+groups.filter(g=>g.tasks.every(t=>t.checked)).length+' من '+groups.length+' أيام مكتملة';
+   $('progressSummary').textContent='الأسبوع الحالي: '+((typeof state!=='undefined'?state.currentWeek:1))+' • '+groups.filter(g=>g.tasks.every(t=>t.checked)).length+' من '+groups.length+' أيام مكتملة';
    list.innerHTML=groups.map(g=>{
      const n=g.tasks.filter(t=>t.checked).length,complete=n===g.tasks.length;
      return '<div class="monthbox" style="margin:9px 0"><b>'+(complete?'✅ ':'📘 ')+g.name+'</b><div class="plannerMeta">'+n+' / '+g.tasks.length+' مهام مكتملة</div><div class="bar"><span style="width:'+(n/g.tasks.length*100)+'%"></span></div></div>';
    }).join('');
-   const week=window.state?.currentWeek||1,claimed=Array.isArray(economy.weeklyBonusWeeks)&&economy.weeklyBonusWeeks.includes(week);
+   const week=(typeof state!=='undefined'?state.currentWeek:1),claimed=Array.isArray(economy.weeklyBonusWeeks)&&economy.weeklyBonusWeeks.includes(week);
    if(all.length&&done===all.length&&!claimed){
      economy.weeklyBonusWeeks=economy.weeklyBonusWeeks||[];economy.weeklyBonusWeeks.push(week);
      economy.weeklyBonuses=(Number(economy.weeklyBonuses)||0)+50;
