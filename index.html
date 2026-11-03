@@ -118,7 +118,43 @@ h2{font-size:clamp(19px,3vw,24px);margin-top:26px}
 body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#312e81 0,transparent 42%),#111827}body.shop-nature #app{background:radial-gradient(ellipse at 15% 10%,#059669 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#14532d 0,transparent 42%),#10251e}body.shop-pink #app{background:radial-gradient(ellipse at 15% 10%,#db2777 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#9d174d 0,transparent 42%),#271329}body.light-theme .questWallet{color:white}body.light-theme .shopInner{background:#fff;color:#172b43}body.light-theme .shopItem{background:#eff6ff;color:#173653}body.light-theme .shopItem p{color:#58718a}
 @media(max-width:650px){.shopGrid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}
 @media(max-width:390px){.shopGrid{grid-template-columns:1fr}}
-.avatarStage{width:220px;height:330px;display:grid;place-items:center}.humanAvatar{width:220px;height:330px;overflow:visible;filter:drop-shadow(0 9px 10px #0004)}.characterPreview{max-width:420px}.characterControls{grid-template-columns:repeat(2,minmax(0,1fr))}.characterControls label[hidden]{display:none!important}</style></head>
+.avatarStage{width:220px;height:330px;display:grid;place-items:center}.humanAvatar{width:220px;height:330px;overflow:visible;filter:drop-shadow(0 9px 10px #0004)}.characterPreview{max-width:420px}.characterControls{grid-template-columns:repeat(2,minmax(0,1fr))}.characterControls label[hidden]{display:none!important}
+/* Weekly quest board inspired by the supplied reference */
+.days{grid-template-columns:repeat(7,minmax(176px,1fr));gap:10px;overflow-x:auto;padding:2px 2px 14px;scroll-snap-type:x proximity}
+.day{min-width:0;scroll-snap-align:start;box-shadow:0 7px 18px #050a1c55;transition:transform .18s,border-color .18s}
+.day:hover{transform:translateY(-3px);border-color:#91a8ff}
+.dayhead{min-height:66px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:12px;background:linear-gradient(135deg,#263b86,#26304f)}
+.dayhead h3{font-size:17px;color:#fff}
+.day:nth-child(7n+1) .dayhead{background:linear-gradient(135deg,#174f91,#203b70)}
+.day:nth-child(7n+2) .dayhead{background:linear-gradient(135deg,#18724e,#174b42)}
+.day:nth-child(7n+3) .dayhead{background:linear-gradient(135deg,#7041a0,#382b70)}
+.day:nth-child(7n+4) .dayhead{background:linear-gradient(135deg,#a94b20,#71351f)}
+.day:nth-child(7n+5) .dayhead{background:linear-gradient(135deg,#087a8a,#174b67)}
+.day:nth-child(7n+6) .dayhead{background:linear-gradient(135deg,#3947a5,#292e73)}
+.day:nth-child(7n) .dayhead{background:linear-gradient(135deg,#505b75,#30384f)}
+.day .tag{font-size:10px;white-space:normal;max-width:100%;background:#fff;color:#18264d}
+.tasks{padding:7px 10px}
+.task{grid-template-columns:19px minmax(0,1fr);gap:7px;padding:10px 0;align-items:start}
+.task .xp{grid-column:2;font-size:11px}
+.task label{font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.task input{width:17px;height:17px;margin-top:2px}
+.note{font-size:11px;padding:0 10px 12px}
+.side{background:linear-gradient(160deg,#1b2a5a,#151d3a);box-shadow:0 10px 28px #050a1c66}
+.side h2{font-size:20px;color:#fff;padding-bottom:10px;border-bottom:2px solid #718cff}
+.monthbox{min-height:72px;padding:13px;margin:11px 0;background:linear-gradient(110deg,#263b86,#222f5d);border:1px solid #7893ff;box-shadow:0 5px 14px #050a1c55;line-height:1.8}
+.side .monthbox:nth-of-type(1){background:linear-gradient(110deg,#174f91,#222f5d);border-color:#66a8ff}
+.side .monthbox:nth-of-type(2){background:linear-gradient(110deg,#16634e,#222f5d);border-color:#65dcb5}
+.side .monthbox:nth-of-type(3){background:linear-gradient(110deg,#60418c,#222f5d);border-color:#b99aff}
+.side .monthbox:nth-of-type(4){background:linear-gradient(110deg,#75551d,#222f5d);border-color:#ffd166}
+.side .monthbox:nth-of-type(5){background:linear-gradient(110deg,#145b50,#222f5d);border-color:#65e6bd}
+.monthbox b{color:#fff;font-size:14px}
+#journeyWeek{display:inline-block;margin-top:4px;color:#ffe08a;font-weight:800;font-size:15px}
+.characterDrawerAction{border-color:#8ba6ff!important;background:linear-gradient(100deg,#304b9d,#26345e)!important}
+.characterDrawerAction small{margin-inline-start:auto;color:#dce6ff;font-size:11px}
+@media(max-width:1050px){.days{grid-template-columns:repeat(4,minmax(176px,1fr))}}
+@media(max-width:760px){.journey>.side{position:relative;top:auto}.days{grid-template-columns:repeat(2,minmax(160px,1fr));overflow:visible}.dayhead{min-height:62px}}
+@media(max-width:430px){.days{grid-template-columns:1fr}.day{min-width:0}}
+</style></head>
 <body>
 <div id="accountGate">
  <div class="gatebox">
@@ -160,7 +196,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <aside id="toolsDrawer" aria-label="قائمة الأدوات">
  <div class="drawerHead"><div><div class="kicker">STUDY QUEST</div><h2 style="margin:5px 0">أدواتك</h2></div><button id="closeTools">✕</button></div>
  <button class="drawerAction" data-open-tool="progress"><span>📊</span><b>تقدمي وإنجازاتي</b></button>
- <button class="drawerAction" data-open-tool="character"><span>🧑‍🚀</span><b>Character</b></button>
+ <button class="drawerAction characterDrawerAction" data-open-tool="character"><span>👤</span><b>Character</b><small>خصص شكل شخصيتك</small></button>
  <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
  <button class="drawerAction" data-open-tool="assistant"><span>🤖</span><b>AI Assistant</b></button>
  <a class="drawerAction" href="https://open.spotify.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit"><span>🎧</span><b>Spotify</b><span style="margin-inline-start:auto">↗</span></a>
