@@ -28,7 +28,13 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 @media(max-width:700px){#app{padding:14px}.hero{padding:18px}.hero h1{font-size:24px}.heroicon{font-size:48px}.days,.footergrid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:20px}.task{grid-template-columns:22px 1fr auto}}
 .journey{max-width:1300px;margin:18px auto;display:grid;direction:ltr;grid-template-columns:250px minmax(0,1fr);gap:16px}.journey>.side{direction:rtl}.journey>#questMain{direction:rtl;min-width:0}.side{background:#1b2548;border:1px solid #46558b;border-radius:16px;padding:16px}.side h2{margin:0 0 12px}.side button{display:block;width:100%;margin:8px 0;text-align:right}.monthbox,.trophy{background:#222f5d;border:1px solid #46558b;border-radius:12px;padding:12px;margin:8px 0}.trophy{display:inline-block;text-align:center;min-width:120px;margin:5px}.trophy b{display:block}.locked{opacity:.4;filter:grayscale(1)}#profileName{color:#ffd166;font-weight:bold}@media(max-width:760px){.journey{grid-template-columns:1fr}.journey>.side{order:0}} #levelToast{position:fixed;z-index:9999;top:20px;left:50%;transform:translate(-50%,-150%);opacity:0;background:linear-gradient(120deg,#51339b,#1e8a78);border:2px solid #ffd166;color:white;padding:18px 28px;border-radius:16px;text-align:center;font-weight:bold;box-shadow:0 12px 40px #0009;transition:.35s}#levelToast.show{transform:translate(-50%,0);opacity:1}#levelToast small{display:block;margin-top:6px}
 /* Account and personal planner layer */
-#accountGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 10% 0%,#403078 0,transparent 38%),radial-gradient(ellipse at 90% 30%,#183f72 0,transparent 35%),#10172f}
+#accountGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:start center;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:18px;background:radial-gradient(ellipse at 10% 0%,#403078 0,transparent 38%),radial-gradient(ellipse at 90% 30%,#183f72 0,transparent 35%),#10172f}
+ .gatebox{margin:auto 0;max-height:none}
+ #photoImport{margin:14px 0;padding:14px;border:1px dashed #7484c2;border-radius:12px;background:#10172f}
+ #photoImport input{display:block;margin-top:10px}
+ #photoStatus{font-size:13px;color:#ffd166;line-height:1.7;margin-top:8px}
+ #photoPreview{display:none;max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;margin-top:10px}
+ @media(max-width:600px){#accountGate{padding:10px;place-items:start center}.gatebox{padding:16px}.gatebox #dayChoices{grid-template-columns:repeat(2,1fr)!important}}
 #accountGate[hidden]{display:none}
 .gatebox{width:min(560px,100%);background:#1b2548;border:1px solid #7484c2;border-radius:20px;padding:24px;box-shadow:0 18px 60px #0009}
 .gatebox h2{margin:0 0 8px;color:#ffd166}.gatebox p{color:#c2c9e8;line-height:1.7}
@@ -57,7 +63,8 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
    <label id="subjectsLabel">المواد وتفاصيل كل مادة</label>
    <div id="subjectsEditor"></div>
    <button type="button" id="addSubjectBtn" style="margin-top:8px">＋ إضافة مادة</button>
-   <p class="plannerMeta">اكتب اسم المادة، ثم اكتب المطلوب داخلها مثل: محاضرة 1، محاضرة 2، واجب، امتحان، مراجعة.</p>
+   <p class="plannerMeta">اكتب المواد والمهام يدويًا، أو ارفع صورة جدولك لاستخراج النص تلقائيًا ثم راجعه قبل الحفظ.</p>
+    <div id="photoImport"><b>📷 إضافة صورة جدولك بدل الكتابة</b><input id="schedulePhoto" type="file" accept="image/*"><img id="photoPreview" alt="معاينة صورة الجدول"><div id="photoStatus" aria-live="polite">ارفع صورة واضحة للجدول (عربي أو إنجليزي).</div><button type="button" id="readPhotoBtn" style="margin-top:8px">استخراج الجدول من الصورة</button></div>
    <label>الأيام المتاحة للمذاكرة</label><div id="dayChoices" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;color:#f4f5ff">
     <label><input type="checkbox" value="السبت" checked> السبت</label><label><input type="checkbox" value="الأحد" checked> الأحد</label><label><input type="checkbox" value="الاثنين" checked> الاثنين</label><label><input type="checkbox" value="الثلاثاء" checked> الثلاثاء</label><label><input type="checkbox" value="الأربعاء" checked> الأربعاء</label><label><input type="checkbox" value="الخميس" checked> الخميس</label><label><input type="checkbox" value="الجمعة"> الجمعة</label>
    </div>
@@ -147,6 +154,7 @@ const originalUpdate=update;
 update=function(){originalUpdate();refreshTrophies(true)};
 readState();applyWeek();refreshTrophies(false);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -265,6 +273,33 @@ readState();applyWeek();refreshTrophies(false);
    $('saveSetupBtn').textContent='حفظ التعديلات';
  };
  $('addSubjectBtn').onclick=()=>addSubjectRow();addSubjectRow();
+  const photoInput=$('schedulePhoto'),photoPreview=$('photoPreview'),photoStatus=$('photoStatus');
+  let selectedSchedulePhoto=null;
+  photoInput.addEventListener('change',()=>{
+    selectedSchedulePhoto=photoInput.files&&photoInput.files[0]||null;
+    if(!selectedSchedulePhoto){photoPreview.style.display='none';return}
+    if(!selectedSchedulePhoto.type.startsWith('image/')){photoStatus.textContent='اختار ملف صورة JPG أو PNG.';selectedSchedulePhoto=null;return}
+    photoPreview.src=URL.createObjectURL(selectedSchedulePhoto);photoPreview.style.display='block';
+    photoStatus.textContent='الصورة جاهزة. اضغط استخراج الجدول من الصورة.';
+  });
+  $('readPhotoBtn').onclick=async()=>{
+    if(!selectedSchedulePhoto){photoStatus.textContent='اختار صورة الجدول الأول.';return}
+    const btn=$('readPhotoBtn');btn.disabled=true;photoStatus.textContent='جاري قراءة الصورة… قد يستغرق الأمر دقيقة.';
+    try{
+      if(!window.Tesseract)throw new Error('مكتبة قراءة الصور لم تُحمّل. حدّث الصفحة وحاول مرة أخرى.');
+      const result=await window.Tesseract.recognize(selectedSchedulePhoto,'ara+eng',{logger:m=>{
+        if(m.status==='recognizing text'&&m.progress)photoStatus.textContent='جاري استخراج النص… '+Math.round(m.progress*100)+'%';
+      }});
+      const lines=result.data.text.split(/\\r?\\n/).map(x=>x.replace(/[|•·]+/g,' ').replace(/\\s+/g,' ').trim()).filter(x=>x.length>1);
+      if(!lines.length)throw new Error('مش قادر أقرأ نص واضح. جرّب صورة أوضح.');
+      const row=document.querySelector('.subjectEditorRow');
+      if(row){row.querySelector('.subjectName').value='جدول مستخرج من الصورة';row.querySelector('.subjectItems').value=lines.join('\\n')}
+      else addSubjectRow('جدول مستخرج من الصورة',lines.join('\\n'));
+      photoStatus.textContent='تم استخراج '+lines.length+' سطر. راجع النص وعدّل أي أخطاء قبل حفظ الجدول.';
+      $('subjectsEditor').scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){photoStatus.textContent='تعذر استخراج الجدول: '+e.message}
+    finally{btn.disabled=false}
+  };
  $('saveSetupBtn').onclick=async()=>{
    const subjects=[...document.querySelectorAll('.subjectEditorRow')].map(row=>({
      name:row.querySelector('.subjectName').value.trim(),
