@@ -156,7 +156,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
  <button class="drawerAction" data-open-tool="progress"><span>📊</span><b>تقدمي وإنجازاتي</b></button>
  <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
  <button class="drawerAction" data-open-tool="assistant"><span>🤖</span><b>AI Assistant</b></button>
- <button class="drawerAction" data-open-tool="spotify"><span>🎧</span><b>Spotify</b></button>
+ <a class="drawerAction" href="https://open.spotify.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit"><span>🎧</span><b>Spotify</b><span style="margin-inline-start:auto">↗</span></a>
  <p class="smallprint">كل أدوات التركيز في مكان واحد.</p>
 </aside>
 <section class="toolPanel" id="progressPanel">
@@ -198,17 +198,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
   <p class="smallprint">فتح التطبيق تلقائيًا يعتمد على إعدادات الجهاز ودعم روابط التطبيقات. لو ما فتحش التطبيق، هتفتح نسخة الويب.</p>
  </div>
 </section>
-<section class="toolPanel" id="spotifyPanel">
- <div class="toolInner">
-  <div class="toolTop"><h2>🎧 Spotify</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <p class="plannerMeta">شغّل Playlist أو Album أو Track داخل Study Quest. الصق رابط Spotify وسيظهر المشغل هنا.</p>
-  <label for="spotifyLink" style="display:block;margin-top:18px">رابط Spotify</label>
-  <input id="spotifyLink" class="toolField" placeholder="https://open.spotify.com/playlist/...">
-  <button id="loadSpotify">عرض قائمة التشغيل هنا</button>
-  <div id="spotifyEmbedArea" style="margin-top:14px"></div>
-  <p class="smallprint">قد يطلب Spotify تسجيل الدخول، وبعض خصائص التشغيل تعتمد على حساب Spotify ونوعه.</p>
- </div>
-</section>
+
 <div class="journey"><aside class="side"><h2>🧭 MY JOURNEY</h2><p>PLAYER: <span id="profileName"></span></p><button id="changeName">تغيير الاسم</button><button id="editPlanBtn">✏️ تعديل الجدول</button><button id="logoutBtn" class="reset">تسجيل الخروج</button><div class="monthbox"><b>🌱 MONTH 1</b><br>Weeks 1–4</div><div class="monthbox"><b>⚡ MONTH 2</b><br>Weeks 5–8</div><div class="monthbox"><b>🏆 MONTH 3</b><br>Weeks 9–12</div><div class="monthbox"><b>📅 YOUR 12-WEEK RUN</b><br><span id="journeyWeek">Current: Week 1</span></div><div class="monthbox"><b id="journeyLevel">Level 1</b><br><span id="journeyXP">0 XP</span></div></aside><div id="questMain"><main id="app"><div class="wrap">
 <header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>STUDY QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
 <section class="stats" aria-label="إحصائيات التقدم"><div class="stat"><small>إجمالي الخبرة</small><strong><span id="total">0</span> XP</strong></div><div class="stat"><small>المستوى الحالي</small><strong id="level">Level 1</strong></div><div class="stat"><small>التقدم للمستوى التالي</small><strong><span id="remain">1000</span> XP</strong><div class="bar"><span id="progress"></span></div></div></section>
@@ -521,11 +511,7 @@ readState();applyWeek();refreshTrophies(false);
  // Assistant choices use official universal links.
  // The operating system may open the installed app; otherwise the website opens.
  // Spotify opens from the website; optional public playlist embed.
- $('loadSpotify').addEventListener('click',()=>{
-   const raw=$('spotifyLink').value.trim();const match=raw.match(/open\.spotify\.com\/(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/);
-   if(!match){$('spotifyEmbedArea').innerHTML='<p class="plannerMeta">حط رابط Playlist أو Album أو Track صحيح من Spotify.</p>';return}
-   $('spotifyEmbedArea').innerHTML='<iframe class="spotifyFrame" title="Spotify player" src="https://open.spotify.com/embed/'+match[1]+'/'+match[2]+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
- });
+ 
 })();
 </script>
 <script>(()=>{const key='study-quest-theme',btn=document.getElementById('themeToggle');if(!btn)return;const apply=mode=>{document.body.classList.toggle('light-theme',mode==='light');btn.textContent=mode==='light'?'🌙':'☀️';btn.title=mode==='light'?'التبديل للوضع الداكن':'التبديل للوضع الفاتح';btn.setAttribute('aria-label',btn.title)};let saved='dark';try{saved=localStorage.getItem(key)||'dark'}catch(e){}apply(saved);btn.addEventListener('click',()=>{const next=document.body.classList.contains('light-theme')?'dark':'light';apply(next);try{localStorage.setItem(key,next)}catch(e){}})})();</script><script>
