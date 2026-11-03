@@ -118,7 +118,7 @@ h2{font-size:clamp(19px,3vw,24px);margin-top:26px}
 body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#312e81 0,transparent 42%),#111827}body.shop-nature #app{background:radial-gradient(ellipse at 15% 10%,#059669 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#14532d 0,transparent 42%),#10251e}body.shop-pink #app{background:radial-gradient(ellipse at 15% 10%,#db2777 0,transparent 40%),radial-gradient(ellipse at 85% 70%,#9d174d 0,transparent 42%),#271329}body.light-theme .questWallet{color:white}body.light-theme .shopInner{background:#fff;color:#172b43}body.light-theme .shopItem{background:#eff6ff;color:#173653}body.light-theme .shopItem p{color:#58718a}
 @media(max-width:650px){.shopGrid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}
 @media(max-width:390px){.shopGrid{grid-template-columns:1fr}}
-</style></head>
+.avatarStage{width:220px;height:330px;display:grid;place-items:center}.humanAvatar{width:220px;height:330px;overflow:visible;filter:drop-shadow(0 9px 10px #0004)}.characterPreview{max-width:420px}.characterControls{grid-template-columns:repeat(2,minmax(0,1fr))}.characterControls label[hidden]{display:none!important}</style></head>
 <body>
 <div id="accountGate">
  <div class="gatebox">
@@ -176,14 +176,33 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 </section>
 <section class="toolPanel" id="characterPanel">
  <div class="toolInner">
-  <div class="toolTop"><h2>🧑‍🚀 شخصيتي — Character</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <div class="characterPreview" id="characterPreview"><div id="characterAvatar">🧑‍🚀</div><b id="characterName">Player</b><span id="characterLevel">Level 0</span><strong id="characterTitle">Beginner</strong></div>
-  <p class="plannerMeta">خصص شكل شخصيتك. العناصر المقفولة تقدر تشتريها من الـ Shop بالـ Coins.</p>
+  <div class="toolTop"><h2>👤 شخصيتي — Character</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <div class="characterPreview" id="characterPreview">
+   <div id="characterAvatar" class="avatarStage" aria-label="شخصية إنسان كاملة">
+    <svg viewBox="0 0 220 330" role="img" aria-label="شخصية إنسان بتيشيرت وبنطلون" class="humanAvatar">
+     <ellipse cx="110" cy="315" rx="57" ry="9" fill="#080d20" opacity=".35"/>
+     <path d="M82 211 L105 211 L101 292 L94 306 L65 306 L70 294 Z" fill="var(--avatar-pants,#26364f)" stroke="#111827" stroke-width="2"/>
+     <path d="M115 211 L138 211 L151 294 L157 306 L128 306 L121 294 Z" fill="var(--avatar-pants,#26364f)" stroke="#111827" stroke-width="2"/>
+     <path d="M64 302 Q79 296 98 303 L99 316 L56 316 Q53 309 64 302 M128 303 Q144 297 158 303 L167 316 L126 316 Z" fill="#202535"/>
+     <path d="M79 132 Q110 119 141 132 L157 216 Q110 232 63 216 Z" fill="var(--avatar-shirt,#3676c8)" stroke="#17233b" stroke-width="2"/>
+     <path d="M79 139 L54 151 L38 207 L56 214 L77 177 M141 139 L166 151 L182 207 L164 214 L143 177" fill="#d9a27f" stroke="#9b6b54" stroke-width="2"/>
+     <path d="M94 122 L94 143 Q110 158 126 143 L126 122" fill="#c98f70"/>
+     <ellipse cx="110" cy="82" rx="39" ry="48" fill="#d9a27f" stroke="#9b6b54" stroke-width="2"/>
+     <path d="M72 79 Q68 31 110 29 Q153 31 149 79 Q135 57 116 58 Q91 57 72 79Z" fill="var(--avatar-hair,#463329)"/>
+     <path d="M91 88 Q96 82 101 88 M119 88 Q124 82 129 88" fill="none" stroke="#38251f" stroke-width="3" stroke-linecap="round"/>
+     <path d="M104 108 Q110 113 117 108" fill="none" stroke="#8f5148" stroke-width="2" stroke-linecap="round"/>
+     <g id="avatarGlasses" style="display:none" fill="none" stroke="#172033" stroke-width="4"><rect x="78" y="79" width="27" height="19" rx="7"/><rect x="115" y="79" width="27" height="19" rx="7"/><path d="M105 87 H115"/></g>
+     <path d="M94 142 Q110 153 126 142" fill="none" stroke="#b77a60" stroke-width="3"/>
+    </svg>
+   </div>
+   <b id="characterName">Player</b><span id="characterLevel">Level 0</span><strong id="characterTitle">Beginner</strong>
+  </div>
+  <p class="plannerMeta">ابدأ بتيشيرت وبنطلون عاديين. اشترِ الإضافات من المتجر وبعدها اختار اللي تلبسه.</p>
   <div class="characterControls">
-   <label>الشخصية <select id="avatarChoice"><option value="🧑‍🚀">رائد فضاء</option><option value="🧙">ساحر</option><option value="🥷">نينجا</option><option value="🦸">بطل</option><option value="🤖">روبوت</option><option value="🧑‍🎤">موسيقي</option></select></label>
-   <label>الشعر <select id="hairChoice"><option value="none">بدون إضافة</option><option value="hair_blue">شعر أزرق</option><option value="hair_gold">شعر ذهبي</option><option value="hair_pink">شعر وردي</option></select></label>
-   <label>الملابس <select id="outfitChoice"><option value="basic">الملابس الأساسية</option><option value="outfit_hoodie">هودي مميز</option><option value="outfit_royal">الزي الملكي</option><option value="outfit_space">بدلة فضاء</option></select></label>
-   <label>الإكسسوار <select id="accessoryChoice"><option value="none">بدون</option><option value="acc_crown">تاج</option><option value="acc_glasses">نظارة</option><option value="acc_wings">أجنحة</option></select></label>
+   <label>الشعر <select id="hairChoice"></select></label>
+   <label>التيشيرت <select id="shirtChoice"></select></label>
+   <label>البنطلون <select id="pantsChoice"></select></label>
+   <label>النظارة <select id="glassesChoice"></select></label>
   </div>
   <p class="plannerMeta" id="characterStatus" aria-live="polite"></p>
  </div>
@@ -231,15 +250,13 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#854d0e,#fbbf24)">👑</div><b>إطار الملك</b><p>إطار ذهبي للبروفايل</p><button data-buy="crown" data-cost="60">🪙 60 — شراء</button></article>
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#334155,#94a3b8)">🤖</div><b>أفاتار روبوت</b><p>شارة روبوت للبروفايل</p><button data-buy="robot" data-cost="50">🪙 50 — شراء</button></article>
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#075985,#67e8f9)">⚡</div><b>شارة البرق</b><p>شارة إنجاز إضافية</p><button data-buy="bolt" data-cost="40">🪙 40 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">💙</div><b>شعر أزرق</b><p>ستايل شعر للشخصية</p><button data-buy="hair_blue" data-cost="60">🪙 60 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">🌟</div><b>شعر ذهبي</b><p>ستايل شعر نادر</p><button data-buy="hair_gold" data-cost="100">🪙 100 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">💙</div><b>شعر أزرق</b><p>لون شعر جديد لشخصيتك</p><button data-buy="hair_blue" data-cost="60">🪙 60 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🌟</div><b>شعر ذهبي</b><p>ستايل شعر مميز</p><button data-buy="hair_gold" data-cost="100">🪙 100 — شراء</button></article>
 <article class="shopItem"><div class="shopArt">💗</div><b>شعر وردي</b><p>ستايل شعر مميز</p><button data-buy="hair_pink" data-cost="80">🪙 80 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">🧥</div><b>هودي مميز</b><p>ملابس للشخصية</p><button data-buy="outfit_hoodie" data-cost="120">🪙 120 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">👑</div><b>الزي الملكي</b><p>ملابس أسطورية</p><button data-buy="outfit_royal" data-cost="200">🪙 200 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">🚀</div><b>بدلة فضاء</b><p>زي رائد الفضاء</p><button data-buy="outfit_space" data-cost="160">🪙 160 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">👑</div><b>تاج</b><p>إكسسوار للشخصية</p><button data-buy="acc_crown" data-cost="90">🪙 90 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">🕶️</div><b>نظارة</b><p>إكسسوار للشخصية</p><button data-buy="acc_glasses" data-cost="70">🪙 70 — شراء</button></article>
-<article class="shopItem"><div class="shopArt">🪽</div><b>أجنحة</b><p>إكسسوار نادر</p><button data-buy="acc_wings" data-cost="180">🪙 180 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🧥</div><b>تيشيرت هودي</b><p>ملابس جديدة للشخصية</p><button data-buy="shirt_hoodie" data-cost="120">🪙 120 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">👕</div><b>تيشيرت أحمر</b><p>لون تيشيرت جديد</p><button data-buy="shirt_red" data-cost="90">🪙 90 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">👖</div><b>بنطلون أسود</b><p>ستايل بنطلون جديد</p><button data-buy="pants_black" data-cost="100">🪙 100 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🕶️</div><b>نظارة شمس</b><p>إكسسوار للوجه</p><button data-buy="glasses_sun" data-cost="70">🪙 70 — شراء</button></article>
 </div><div id="shopMessage" role="status"></div></div></div><h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
 <section class="days" id="days">
 <article class="day"><div class="dayhead"><h3>السبت</h3><span class="tag">ARABIC + CODE</span></div><div class="tasks">
@@ -657,35 +674,51 @@ readState();applyWeek();refreshTrophies(false);
  });
  document.addEventListener('click',e=>{if(e.target.closest('#nextWeek'))setTimeout(award,100)});
  const oldSync=window.bqSync;
- // Character customization and level titles.
+ // Full-body human avatar with separately purchasable and equippable cosmetics.
  const characterKey='study-quest-character-v1';
- let character={avatar:'🧑‍🚀',hair:'none',outfit:'basic',accessory:'none'};
+ let character={hair:'default',shirt:'basic',pants:'basic',glasses:'none'};
  try{character=Object.assign(character,JSON.parse(localStorage.getItem(characterKey)||'{}'))}catch(e){}
- const characterFields={avatar:'avatarChoice',hair:'hairChoice',outfit:'outfitChoice',accessory:'accessoryChoice'};
  const titles=['Beginner','Rookie','Focused Learner','Knowledge Seeker','Quest Explorer','Rising Star','Champion','Mastermind','Legend','Grandmaster','Mythic Hero'];
- const required={hair_blue:'hair_blue',hair_gold:'hair_gold',hair_pink:'hair_pink',outfit_hoodie:'outfit_hoodie',outfit_royal:'outfit_royal',outfit_space:'outfit_space',acc_crown:'acc_crown',acc_glasses:'acc_glasses',acc_wings:'acc_wings'};
+ const wardrobe={
+  hair:{hair_blue:'شعر أزرق',hair_gold:'شعر ذهبي',hair_pink:'شعر وردي'},
+  shirt:{shirt_hoodie:'هودي',shirt_red:'تيشيرت أحمر'},
+  pants:{pants_black:'بنطلون أسود'},
+  glasses:{glasses_sun:'نظارة شمس'}
+ };
+ const selects={hair:'hairChoice',shirt:'shirtChoice',pants:'pantsChoice',glasses:'glassesChoice'};
+ const defaults={hair:'default',shirt:'basic',pants:'basic',glasses:'none'};
+ const labels={hair:{default:'الشعر الأساسي'},shirt:{basic:'تيشيرت عادي'},pants:{basic:'بنطلون عادي'},glasses:{none:'بدون نظارة'}};
  function levelNow(){return Math.floor(xp()/1000)}
  function renderCharacter(){
-   const level=levelNow(),owned=new Set(economy.owned);
-   $('characterAvatar').textContent=character.avatar;
-   $('characterName').textContent=localStorage.getItem('bacaloria-quest-player-v1')||'Player';
-   $('characterLevel').textContent='Level '+level;
-   $('characterTitle').textContent=titles[Math.min(level,titles.length-1)];
-   Object.entries(characterFields).forEach(([key,id])=>{const el=$(id);if(el)el.value=character[key]||({hair:'none',outfit:'basic',accessory:'none'}[key]||'🧑‍🚀');});
-   $('characterStatus').textContent='الشعر: '+(character.hair==='none'?'الأساسي':owned.has(character.hair)?'مفعّل':'غير متاح')+' • الملابس: '+(character.outfit==='basic'?'الأساسية':owned.has(character.outfit)?'مفعّلة':'غير متاحة')+' • الإكسسوار: '+(character.accessory==='none'?'لا يوجد':owned.has(character.accessory)?'مفعّل':'غير متاح');
+  const owned=new Set(economy.owned),level=levelNow();
+  $('characterName').textContent=localStorage.getItem('bacaloria-quest-player-v1')||'Player';
+  $('characterLevel').textContent='Level '+level;
+  $('characterTitle').textContent=titles[Math.min(level,titles.length-1)];
+  Object.entries(wardrobe).forEach(([group,items])=>{
+   const select=$(selects[group]),available=Object.keys(items).filter(id=>owned.has(id));
+   if(!available.includes(character[group]))character[group]=defaults[group];
+   const opts=[...Object.entries(labels[group]),...available.map(id=>[id,items[id]])];
+   select.innerHTML=opts.map(([id,name])=>'<option value="'+id+'">'+name+'</option>').join('');
+   select.value=character[group];
+  });
+  const svg=$('characterAvatar').querySelector('svg');
+  const hair={default:'#463329',hair_blue:'#168bd5',hair_gold:'#d9a51d',hair_pink:'#df6aa7'};
+  const shirts={basic:'#3676c8',shirt_hoodie:'#334155',shirt_red:'#d63c45'};
+  const pants={basic:'#26364f',pants_black:'#111827'};
+  svg.style.setProperty('--avatar-hair',hair[character.hair]||hair.default);
+  svg.style.setProperty('--avatar-shirt',shirts[character.shirt]||shirts.basic);
+  svg.style.setProperty('--avatar-pants',pants[character.pants]||pants.basic);
+  $('avatarGlasses').style.display=character.glasses==='glasses_sun'?'':'none';
+  localStorage.setItem(characterKey,JSON.stringify(character));
+  const count=Object.entries(wardrobe).reduce((n,[g,items])=>n+Object.keys(items).filter(id=>owned.has(id)).length,0);
+  $('characterStatus').textContent=count?'العناصر اللي فتحتها: '+count+' — اختار اللي تحب تلبسه.':'شخصيتك جاهزة! اجمع Coins وافتح أول قطعة من المتجر.';
  }
- Object.entries(characterFields).forEach(([key,id])=>$(id).addEventListener('change',e=>{
-   const value=e.target.value;
-   if(required[value]&&!economy.owned.includes(value)){
-     $('characterStatus').textContent='العنصر ده لسه مقفول. اشتريه من الـ Shop الأول.';
-     e.target.value=character[key]||({hair:'none',outfit:'basic',accessory:'none'}[key]||'🧑‍🚀');return;
-   }
-   character[key]=value;localStorage.setItem(characterKey,JSON.stringify(character));renderCharacter();
+ Object.entries(selects).forEach(([group,id])=>$(id).addEventListener('change',e=>{
+  character[group]=e.target.value;localStorage.setItem(characterKey,JSON.stringify(character));renderCharacter();
  }));
  const oldRender=render;
  render=function(){oldRender();renderCharacter()};
- const oldBuy=document.querySelectorAll('[data-buy]');
- oldBuy.forEach(btn=>btn.addEventListener('click',()=>setTimeout(renderCharacter,0)));
+ document.querySelectorAll('[data-buy]').forEach(btn=>btn.addEventListener('click',()=>setTimeout(renderCharacter,0)));
  renderCharacter();
  // Coins and purchases are stored on this browser; task XP remains in the existing planner.
  render();setTimeout(()=>{award();refreshWeeklyProgress()},500);
