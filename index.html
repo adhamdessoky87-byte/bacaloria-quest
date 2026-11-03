@@ -105,6 +105,11 @@ h2{font-size:clamp(19px,3vw,24px);margin-top:26px}
 #shopPanel{display:none;position:fixed;z-index:11999;inset:0;overflow:auto;background:#0b1425ed;padding:18px}
 #shopPanel.active{display:block}.shopInner{max-width:850px;margin:55px auto 30px;background:var(--panel);color:var(--site-on-background);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 25px 80px #0008}
 .shopGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.characterPreview{display:flex;flex-direction:column;align-items:center;gap:8px;margin:18px auto;padding:22px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,var(--panel2),var(--panel));max-width:360px}
+#characterAvatar{font-size:82px;line-height:1.3;filter:drop-shadow(0 8px 10px #0004)}
+#characterLevel{font-weight:700;color:var(--gold)}#characterTitle{padding:6px 14px;border-radius:20px;background:#2563eb;color:white}
+.characterControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.characterControls label{display:grid;gap:6px}.characterControls select{padding:11px;border-radius:10px;background:var(--panel2);color:var(--site-on-background);border:1px solid var(--line)}
+@media(max-width:600px){.characterControls{grid-template-columns:1fr}}
 .shopItem{padding:16px;border-radius:17px;background:var(--panel2);border:1px solid var(--line);text-align:center}
 .shopArt{height:76px;display:grid;place-items:center;border-radius:13px;margin-bottom:12px;font-size:35px;background:linear-gradient(135deg,#1d4ed8,#0891b2)}
 .shopItem p{font-size:13px;color:var(--muted);min-height:38px}.shopItem button{width:100%;margin-top:8px}
@@ -155,6 +160,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <aside id="toolsDrawer" aria-label="قائمة الأدوات">
  <div class="drawerHead"><div><div class="kicker">STUDY QUEST</div><h2 style="margin:5px 0">أدواتك</h2></div><button id="closeTools">✕</button></div>
  <button class="drawerAction" data-open-tool="progress"><span>📊</span><b>تقدمي وإنجازاتي</b></button>
+ <button class="drawerAction" data-open-tool="character"><span>🧑‍🚀</span><b>Character</b></button>
  <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
  <button class="drawerAction" data-open-tool="assistant"><span>🤖</span><b>AI Assistant</b></button>
  <a class="drawerAction" href="https://open.spotify.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit"><span>🎧</span><b>Spotify</b><span style="margin-inline-start:auto">↗</span></a>
@@ -166,6 +172,20 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
   <p class="plannerMeta" id="progressSummary">تابع إنجاز كل يوم ومهام الأسبوع هنا.</p>
   <div class="stat" style="margin:14px 0"><small>إنجاز الأسبوع</small><strong id="weeklyProgressCount">0 / 0</strong><div class="bar"><span id="weeklyProgressBar"></span></div><p class="plannerMeta" id="weeklyRewardStatus">أكمل كل مهام الأسبوع لتحصل على 50 Coins 🪙</p></div>
   <div id="dailyProgressList"></div>
+ </div>
+</section>
+<section class="toolPanel" id="characterPanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>🧑‍🚀 شخصيتي — Character</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <div class="characterPreview" id="characterPreview"><div id="characterAvatar">🧑‍🚀</div><b id="characterName">Player</b><span id="characterLevel">Level 0</span><strong id="characterTitle">Beginner</strong></div>
+  <p class="plannerMeta">خصص شكل شخصيتك. العناصر المقفولة تقدر تشتريها من الـ Shop بالـ Coins.</p>
+  <div class="characterControls">
+   <label>الشخصية <select id="avatarChoice"><option value="🧑‍🚀">رائد فضاء</option><option value="🧙">ساحر</option><option value="🥷">نينجا</option><option value="🦸">بطل</option><option value="🤖">روبوت</option><option value="🧑‍🎤">موسيقي</option></select></label>
+   <label>الشعر <select id="hairChoice"><option value="none">بدون إضافة</option><option value="hair_blue">شعر أزرق</option><option value="hair_gold">شعر ذهبي</option><option value="hair_pink">شعر وردي</option></select></label>
+   <label>الملابس <select id="outfitChoice"><option value="basic">الملابس الأساسية</option><option value="outfit_hoodie">هودي مميز</option><option value="outfit_royal">الزي الملكي</option><option value="outfit_space">بدلة فضاء</option></select></label>
+   <label>الإكسسوار <select id="accessoryChoice"><option value="none">بدون</option><option value="acc_crown">تاج</option><option value="acc_glasses">نظارة</option><option value="acc_wings">أجنحة</option></select></label>
+  </div>
+  <p class="plannerMeta" id="characterStatus" aria-live="polite"></p>
  </div>
 </section>
 <section class="toolPanel" id="pomodoroPanel">
@@ -211,6 +231,15 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#854d0e,#fbbf24)">👑</div><b>إطار الملك</b><p>إطار ذهبي للبروفايل</p><button data-buy="crown" data-cost="60">🪙 60 — شراء</button></article>
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#334155,#94a3b8)">🤖</div><b>أفاتار روبوت</b><p>شارة روبوت للبروفايل</p><button data-buy="robot" data-cost="50">🪙 50 — شراء</button></article>
 <article class="shopItem"><div class="shopArt" style="background:linear-gradient(135deg,#075985,#67e8f9)">⚡</div><b>شارة البرق</b><p>شارة إنجاز إضافية</p><button data-buy="bolt" data-cost="40">🪙 40 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">💙</div><b>شعر أزرق</b><p>ستايل شعر للشخصية</p><button data-buy="hair_blue" data-cost="60">🪙 60 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🌟</div><b>شعر ذهبي</b><p>ستايل شعر نادر</p><button data-buy="hair_gold" data-cost="100">🪙 100 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">💗</div><b>شعر وردي</b><p>ستايل شعر مميز</p><button data-buy="hair_pink" data-cost="80">🪙 80 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🧥</div><b>هودي مميز</b><p>ملابس للشخصية</p><button data-buy="outfit_hoodie" data-cost="120">🪙 120 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">👑</div><b>الزي الملكي</b><p>ملابس أسطورية</p><button data-buy="outfit_royal" data-cost="200">🪙 200 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🚀</div><b>بدلة فضاء</b><p>زي رائد الفضاء</p><button data-buy="outfit_space" data-cost="160">🪙 160 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">👑</div><b>تاج</b><p>إكسسوار للشخصية</p><button data-buy="acc_crown" data-cost="90">🪙 90 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🕶️</div><b>نظارة</b><p>إكسسوار للشخصية</p><button data-buy="acc_glasses" data-cost="70">🪙 70 — شراء</button></article>
+<article class="shopItem"><div class="shopArt">🪽</div><b>أجنحة</b><p>إكسسوار نادر</p><button data-buy="acc_wings" data-cost="180">🪙 180 — شراء</button></article>
 </div><div id="shopMessage" role="status"></div></div></div><h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
 <section class="days" id="days">
 <article class="day"><div class="dayhead"><h3>السبت</h3><span class="tag">ARABIC + CODE</span></div><div class="tasks">
@@ -628,6 +657,36 @@ readState();applyWeek();refreshTrophies(false);
  });
  document.addEventListener('click',e=>{if(e.target.closest('#nextWeek'))setTimeout(award,100)});
  const oldSync=window.bqSync;
+ // Character customization and level titles.
+ const characterKey='study-quest-character-v1';
+ let character={avatar:'🧑‍🚀',hair:'none',outfit:'basic',accessory:'none'};
+ try{character=Object.assign(character,JSON.parse(localStorage.getItem(characterKey)||'{}'))}catch(e){}
+ const characterFields={avatar:'avatarChoice',hair:'hairChoice',outfit:'outfitChoice',accessory:'accessoryChoice'};
+ const titles=['Beginner','Rookie','Focused Learner','Knowledge Seeker','Quest Explorer','Rising Star','Champion','Mastermind','Legend','Grandmaster','Mythic Hero'];
+ const required={hair_blue:'hair_blue',hair_gold:'hair_gold',hair_pink:'hair_pink',outfit_hoodie:'outfit_hoodie',outfit_royal:'outfit_royal',outfit_space:'outfit_space',acc_crown:'acc_crown',acc_glasses:'acc_glasses',acc_wings:'acc_wings'};
+ function levelNow(){return Math.floor(xp()/1000)}
+ function renderCharacter(){
+   const level=levelNow(),owned=new Set(economy.owned);
+   $('characterAvatar').textContent=character.avatar;
+   $('characterName').textContent=localStorage.getItem('bacaloria-quest-player-v1')||'Player';
+   $('characterLevel').textContent='Level '+level;
+   $('characterTitle').textContent=titles[Math.min(level,titles.length-1)];
+   Object.entries(characterFields).forEach(([key,id])=>{const el=$(id);if(el)el.value=character[key]||({hair:'none',outfit:'basic',accessory:'none'}[key]||'🧑‍🚀');});
+   $('characterStatus').textContent='الشعر: '+(character.hair==='none'?'الأساسي':owned.has(character.hair)?'مفعّل':'غير متاح')+' • الملابس: '+(character.outfit==='basic'?'الأساسية':owned.has(character.outfit)?'مفعّلة':'غير متاحة')+' • الإكسسوار: '+(character.accessory==='none'?'لا يوجد':owned.has(character.accessory)?'مفعّل':'غير متاح');
+ }
+ Object.entries(characterFields).forEach(([key,id])=>$(id).addEventListener('change',e=>{
+   const value=e.target.value;
+   if(required[value]&&!economy.owned.includes(value)){
+     $('characterStatus').textContent='العنصر ده لسه مقفول. اشتريه من الـ Shop الأول.';
+     e.target.value=character[key]||({hair:'none',outfit:'basic',accessory:'none'}[key]||'🧑‍🚀');return;
+   }
+   character[key]=value;localStorage.setItem(characterKey,JSON.stringify(character));renderCharacter();
+ }));
+ const oldRender=render;
+ render=function(){oldRender();renderCharacter()};
+ const oldBuy=document.querySelectorAll('[data-buy]');
+ oldBuy.forEach(btn=>btn.addEventListener('click',()=>setTimeout(renderCharacter,0)));
+ renderCharacter();
  // Coins and purchases are stored on this browser; task XP remains in the existing planner.
  render();setTimeout(()=>{award();refreshWeeklyProgress()},500);
  document.getElementById('nextWeek')?.addEventListener('click',()=>setTimeout(refreshWeeklyProgress,120));
