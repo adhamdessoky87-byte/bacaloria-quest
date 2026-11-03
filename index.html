@@ -48,6 +48,8 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 .subjectEditorRow textarea{min-height:64px;resize:vertical}
 .subjectEditorHead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .subjectEditorHead b{color:#ffd166}
+
+.manualBuilder{margin:14px 0;padding:14px;border:1px solid #46558b;border-radius:14px;background:#10172f}.manualTaskRow{display:grid;grid-template-columns:1fr  .8fr 1fr 1.5fr auto;gap:7px;align-items:center;margin:9px 0;padding:9px;background:#1b2548;border-radius:10px}.manualTaskRow input,.manualTaskRow select{min-width:0;width:100%;padding:9px;border-radius:8px;border:1px solid #46558b;background:#10172f;color:white;font:inherit}.manualHint{font-size:12px;color:#c2c9e8;line-height:1.7}@media(max-width:600px){.manualTaskRow{grid-template-columns:1fr 1fr}.manualTaskRow .taskText{grid-column:1/-1}.manualTaskRow button{grid-column:1/-1}}
 </style></head>
 <body>
 <div id="accountGate">
@@ -67,6 +69,12 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
     <div id="photoImport"><b>📷 إضافة صورة جدولك بدل الكتابة</b><input id="schedulePhoto" type="file" accept="image/*"><img id="photoPreview" alt="معاينة صورة الجدول"><div id="photoStatus" aria-live="polite">ارفع صورة واضحة للجدول (عربي أو إنجليزي).</div><button type="button" id="readPhotoBtn" style="margin-top:8px">استخراج الجدول من الصورة</button></div>
    <label>الأيام المتاحة للمذاكرة</label><div id="dayChoices" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;color:#f4f5ff">
     <label><input type="checkbox" value="السبت" checked> السبت</label><label><input type="checkbox" value="الأحد" checked> الأحد</label><label><input type="checkbox" value="الاثنين" checked> الاثنين</label><label><input type="checkbox" value="الثلاثاء" checked> الثلاثاء</label><label><input type="checkbox" value="الأربعاء" checked> الأربعاء</label><label><input type="checkbox" value="الخميس" checked> الخميس</label><label><input type="checkbox" value="الجمعة"> الجمعة</label>
+   </div>
+   <div class="manualBuilder">
+    <b>🗓️ ابنِ جدولك بنفسك</b>
+    <p class="manualHint">اختار الأيام فوق، وبعدها أضف كل مهمة وحدد يومها ووقتها ومادتها. تقدر تضيف أو تحذف مهام براحتك.</p>
+    <div id="manualTasks"></div>
+    <button type="button" id="addManualTaskBtn">＋ إضافة مهمة للجدول</button>
    </div>
    <label>كام ساعة تقدر تذاكر في اليوم؟</label><input id="userHours" type="number" min="1" max="12" value="3">
    <label>كام يوم في الأسبوع؟</label><input id="userDays" type="number" min="1" max="7" value="5">
@@ -266,10 +274,25 @@ readState();applyWeek();refreshTrophies(false);
    const saved=profile.planner.setup;showSetup();$('userRole').value=saved.role||'school';
    $('userHours').value=saved.hours||3;$('userDays').value=saved.daysPerWeek||saved.days?.length||5;
    $('subjectsEditor').innerHTML='';(saved.subjects||[]).forEach(s=>addSubjectRow(s.name,(s.items||[]).join('، ')));
+   $('manualTasks').innerHTML='';(saved.schedule?.days||[]).forEach(d=>(d.tasks||[]).forEach(t=>addManualTask(d.name,t.time||'',t.subject||'',t.text||'')));
    document.querySelectorAll('#dayChoices input').forEach(box=>box.checked=(saved.days||[]).includes(box.value));
    $('saveSetupBtn').textContent='حفظ التعديلات';
  };
  $('addSubjectBtn').onclick=()=>addSubjectRow();addSubjectRow();
+ function addManualTask(day='',time='',subject='',task=''){
+   const row=document.createElement('div');row.className='manualTaskRow';
+   const daySel=document.createElement('select');daySel.className='manualDay';
+   const refresh=()=>{const selected=daySel.value;const opts=[...document.querySelectorAll('#dayChoices input:checked')].map(x=>x.value);daySel.innerHTML=opts.map(d=>'<option value="'+escapeHtml(d)+'">'+escapeHtml(d)+'</option>').join('');if(opts.includes(day||selected))daySel.value=day||selected;};
+   refresh();
+   const tm=document.createElement('input');tm.className='manualTime';tm.placeholder='الوقت (مثلاً 4:00 - 6:00)';tm.value=time;
+   const sub=document.createElement('input');sub.className='manualSubject';sub.placeholder='المادة';sub.value=subject;
+   const txt=document.createElement('input');txt.className='taskText manualText';txt.placeholder='المهمة / التفاصيل';txt.value=task;
+   const del=document.createElement('button');del.type='button';del.textContent='حذف';del.onclick=()=>row.remove();
+   row.append(daySel,tm,sub,txt,del);$('manualTasks').appendChild(row);
+ }
+ $('addManualTaskBtn').onclick=()=>addManualTask();
+ document.querySelectorAll('#dayChoices input').forEach(x=>x.addEventListener('change',()=>document.querySelectorAll('.manualDay').forEach(s=>{const old=s.value,opts=[...document.querySelectorAll('#dayChoices input:checked')].map(b=>b.value);s.innerHTML=opts.map(d=>'<option value="'+escapeHtml(d)+'">'+escapeHtml(d)+'</option>').join('');if(opts.includes(old))s.value=old})));
+
   const photoInput=$('schedulePhoto'),photoPreview=$('photoPreview'),photoStatus=$('photoStatus');
   let selectedSchedulePhoto=null, importedSchedule=null;
   photoInput.addEventListener('change',()=>{
@@ -311,9 +334,13 @@ readState();applyWeek();refreshTrophies(false);
    const subjects=[...document.querySelectorAll('.subjectEditorRow')].filter(row=>row.querySelector('.subjectName')&&row.querySelector('.subjectItems')).map(row=>({name:row.querySelector('.subjectName').value.trim(),items:row.querySelector('.subjectItems').value.split(/[،,\\n]+/).map(x=>x.trim()).filter(Boolean)})).filter(v=>v.name&&v.items.length);
    const days=[...document.querySelectorAll('#dayChoices input:checked')].map(x=>x.value);
    const hours=Number($('userHours').value),daysPerWeek=Number($('userDays').value);
-   if(!importedSchedule&&!subjects.length)return setError('اكتب مادة واحدة على الأقل، أو ارفع صورة جدولك.');
+   const manualRows=[...document.querySelectorAll('.manualTaskRow')].map(row=>({day:row.querySelector('.manualDay').value,time:row.querySelector('.manualTime').value.trim(),subject:row.querySelector('.manualSubject').value.trim(),text:row.querySelector('.manualText').value.trim()})).filter(t=>t.day&&(t.text||t.subject));
+   const manualDays=[...new Set(manualRows.map(t=>t.day))].map(name=>({name,tasks:manualRows.filter(t=>t.day===name)}));
+   const chosenSchedule=importedSchedule|| (manualDays.length?{days:manualDays}:null);
+
+   if(!chosenSchedule&&!subjects.length)return setError('اكتب مادة واحدة على الأقل، أو أضف مهام لجدولك اليدوي، أو ارفع صورة.');
    if(!days.length||daysPerWeek<1||daysPerWeek>7||hours<1||hours>12||daysPerWeek>days.length)return setError('راجع الأيام وعدد الساعات.');
-   const setup={role:$('userRole').value,subjects,days:importedSchedule?importedSchedule.days.map(d=>d.name):days.slice(0,daysPerWeek),daysPerWeek:importedSchedule?importedSchedule.days.length:daysPerWeek,hours,...(importedSchedule?{schedule:importedSchedule}:{})};
+   const setup={role:$('userRole').value,subjects,days:chosenSchedule?chosenSchedule.days.map(d=>d.name):days.slice(0,daysPerWeek),daysPerWeek:chosenSchedule?chosenSchedule.days.length:daysPerWeek,hours,...(chosenSchedule?{schedule:chosenSchedule}:{})};
    const {error}=await client.from('profiles').update({planner:{setup},updated_at:new Date().toISOString()}).eq('id',profile.id);
    if(error)return setError('تعذر حفظ الجدول: '+error.message);
    profile.planner={setup};$('accountGate').hidden=true;
