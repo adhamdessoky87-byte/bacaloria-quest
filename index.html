@@ -73,7 +73,7 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 .timerSettings label{font-size:13px;color:#c2c9e8}
 .aiChoice{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
 .aiChoice button.selected{background:#65a9d9;border-color:#c4e7ff;color:#10172f}
-.aiNotice{font-size:13px;line-height:1.8;color:#c2c9e8;background:#10172f;padding:12px;border-radius:10px;margin:12px 0}
+.aiChatLog{height:min(48vh,430px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px;background:#10172f;border:1px solid #46558b;border-radius:14px;margin:14px 0}.aiBubble{max-width:88%;padding:11px 14px;border-radius:14px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.aiBubble.assistant{align-self:flex-start;background:#263b86}.aiBubble.user{align-self:flex-end;background:#3b2b69}.aiBubble.error{background:#572f35}.aiNotice{font-size:13px;line-height:1.8;color:#c2c9e8;background:#10172f;padding:12px;border-radius:10px;margin:12px 0}
 .spotifyFrame{width:100%;height:380px;border:0;border-radius:14px;background:#10172f}
 @media(max-width:600px){.toolPanel{padding:10px}.toolInner{padding:16px;margin-top:58px}.timerSettings{grid-template-columns:1fr 1fr}}
 </style></head>
@@ -139,20 +139,20 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 <section class="toolPanel" id="assistantPanel">
  <div class="toolInner">
   <div class="toolTop"><h2>🤖 AI Assistant</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <p class="plannerMeta">اختار المساعد اللي تحب تستخدمه.</p>
+  <p class="plannerMeta">اسأل داخل Study Quest، وبدّل بين ChatGPT وGemini وقت ما تحب.</p>
   <div class="aiChoice"><button id="chooseChatGPT" class="selected">ChatGPT</button><button id="chooseGemini">Gemini</button></div>
-  <label for="aiPrompt">اكتب سؤالك أو طلبك</label>
-  <textarea id="aiPrompt" class="toolField" rows="4" placeholder="مثلاً: اشرح لي قانون نيوتن الثاني بطريقة بسيطة..."></textarea>
-  <button id="sendAI">متابعة مع المساعد المختار ↗</button>
-  <div class="aiNotice" id="aiNotice">سيتم فتح المساعد المختار مع سؤالك. تشغيل محادثة AI كاملة داخل Study Quest يحتاج ربط Backend آمن ومفاتيح API؛ لن نضع مفاتيح سرية داخل كود الموقع.</div>
+  <div id="aiChatLog" class="aiChatLog" aria-live="polite"><div class="aiBubble assistant">أهلًا! أنا مساعد Study Quest. اسألني عن دروسك أو خطتك الدراسية. ✨</div></div>
+  <label for="aiPrompt">رسالتك</label>
+  <textarea id="aiPrompt" class="toolField" rows="3" placeholder="اكتب سؤالك هنا..."></textarea>
+  <button id="sendAI">إرسال الرسالة</button>
+  <div class="aiNotice" id="aiNotice">المحادثة ستظهر هنا. لتشغيل الردود، يلزم نشر دالة Supabase وإضافة مفاتيح API السرية من إعدادات المشروع.</div>
  </div>
 </section>
 <section class="toolPanel" id="spotifyPanel">
  <div class="toolInner">
   <div class="toolTop"><h2>🎧 Spotify</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <p class="plannerMeta">افتح Spotify Web Player من هنا، أو اعرض Playlist داخل الصفحة باستخدام رابط قائمة تشغيل عامة.</p>
-  <button id="openSpotify">افتح Spotify ↗</button>
-  <label for="spotifyLink" style="display:block;margin-top:18px">رابط Playlist من Spotify</label>
+  <p class="plannerMeta">شغّل Playlist أو Album أو Track داخل Study Quest. الصق رابط Spotify وسيظهر المشغل هنا.</p>
+  <label for="spotifyLink" style="display:block;margin-top:18px">رابط Spotify</label>
   <input id="spotifyLink" class="toolField" placeholder="https://open.spotify.com/playlist/...">
   <button id="loadSpotify">عرض قائمة التشغيل هنا</button>
   <div id="spotifyEmbedArea" style="margin-top:14px"></div>
@@ -460,18 +460,30 @@ readState();applyWeek();refreshTrophies(false);
  },1000)});
  $('timerPause').addEventListener('click',()=>{stop();$('timerStart').textContent='استكمال';});
  $('timerReset').addEventListener('click',reset);render();
- // AI provider handoff. API-backed in-page chat requires a secure server endpoint.
- let provider='chatgpt';
- const setProvider=p=>{provider=p;$('chooseChatGPT').classList.toggle('selected',p==='chatgpt');$('chooseGemini').classList.toggle('selected',p==='gemini')};
+ // In-page AI chat. Provider keys stay in Supabase Edge Function secrets.
+ let provider='chatgpt',chatHistory=[],aiBusy=false;
+ const setProvider=p=>{provider=p;$('chooseChatGPT').classList.toggle('selected',p==='chatgpt');$('chooseGemini').classList.toggle('selected',p==='gemini');$('aiNotice').textContent='المساعد المختار: '+(p==='chatgpt'?'ChatGPT':'Gemini')+'. محادثتك مستمرة داخل Study Quest.'};
  $('chooseChatGPT').addEventListener('click',()=>setProvider('chatgpt'));
  $('chooseGemini').addEventListener('click',()=>setProvider('gemini'));
- $('sendAI').addEventListener('click',()=>{
-   const prompt=$('aiPrompt').value.trim();if(!prompt){$('aiPrompt').focus();return}
-   const url=provider==='chatgpt'?'https://chatgpt.com/?q='+encodeURIComponent(prompt):'https://gemini.google.com/app';
-   window.open(url,'_blank','noopener,noreferrer');
- });
+ function addBubble(text,who){const el=document.createElement('div');el.className='aiBubble '+who;el.textContent=text;$('aiChatLog').appendChild(el);$('aiChatLog').scrollTop=$('aiChatLog').scrollHeight;return el}
+ async function sendAIMessage(){
+   const prompt=$('aiPrompt').value.trim();if(!prompt||aiBusy)return;
+   $('aiPrompt').value='';addBubble(prompt,'user');chatHistory.push({role:'user',content:prompt});
+   aiBusy=true;$('sendAI').disabled=true;$('sendAI').textContent='جاري التفكير...';
+   const waiting=addBubble('جاري تجهيز الرد...','assistant');
+   try{
+     const session=await window.supabase.createClient('https://xyaogsqqasgmrximzgaf.supabase.co','sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_').auth.getSession();
+     const token=session.data&&session.data.session&&session.data.session.access_token;
+     if(!token)throw new Error('سجّل الدخول أولًا لاستخدام المساعد.');
+     const response=await fetch('https://xyaogsqqasgmrximzgaf.supabase.co/functions/v1/study-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':'sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_'},body:JSON.stringify({provider,messages:chatHistory.slice(-12)})});
+     const data=await response.json();if(!response.ok)throw new Error(data.error||'تعذر الحصول على رد.');
+     waiting.textContent=data.reply||'لم يصل رد من المساعد.';chatHistory.push({role:'assistant',content:waiting.textContent});
+   }catch(e){waiting.classList.add('error');waiting.textContent='المساعد غير جاهز حاليًا: '+e.message+'\nتأكد من نشر study-ai وإضافة مفاتيح OPENAI_API_KEY و GEMINI_API_KEY في Supabase.'}
+   finally{aiBusy=false;$('sendAI').disabled=false;$('sendAI').textContent='إرسال الرسالة';}
+ }
+ $('sendAI').addEventListener('click',sendAIMessage);
+ $('aiPrompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAIMessage()}});
  // Spotify opens from the website; optional public playlist embed.
- $('openSpotify').addEventListener('click',()=>window.open('https://open.spotify.com/','_blank','noopener,noreferrer'));
  $('loadSpotify').addEventListener('click',()=>{
    const raw=$('spotifyLink').value.trim();const match=raw.match(/open\.spotify\.com\/(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/);
    if(!match){$('spotifyEmbedArea').innerHTML='<p class="plannerMeta">حط رابط Playlist أو Album أو Track صحيح من Spotify.</p>';return}
