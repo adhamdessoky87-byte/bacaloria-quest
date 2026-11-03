@@ -51,6 +51,17 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 
 .manualBuilder{margin:14px 0;padding:14px;border:1px solid #46558b;border-radius:14px;background:#10172f}.manualTaskRow{display:grid;grid-template-columns:1fr  .8fr 1fr 1.5fr auto;gap:7px;align-items:center;margin:9px 0;padding:9px;background:#1b2548;border-radius:10px}.manualTaskRow input,.manualTaskRow select{min-width:0;width:100%;padding:9px;border-radius:8px;border:1px solid #46558b;background:#10172f;color:white;font:inherit}.manualHint{font-size:12px;color:#c2c9e8;line-height:1.7}@media(max-width:600px){.manualTaskRow{grid-template-columns:1fr 1fr}.manualTaskRow .taskText{grid-column:1/-1}.manualTaskRow button{grid-column:1/-1}}
 
+
+.assistantChoices{display:grid;grid-template-columns:1fr;gap:14px;margin:24px 0}
+.assistantChoice{display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;border:1px solid #6677b5;background:linear-gradient(120deg,#222f5d,#172345);color:#fff;text-decoration:none;transition:transform .18s,filter .18s}
+.assistantChoice:hover{transform:translateY(-2px);filter:brightness(1.13)}
+.assistantChoice .assistantLogo{width:52px;height:52px;display:grid;place-items:center;border-radius:15px;background:#10172f;font-size:30px;font-weight:bold}
+.chatgptChoice .assistantLogo{color:#8ce8cf}
+.geminiChoice .assistantLogo{color:#9bc4ff}
+.assistantChoice b{display:block;font-size:19px}
+.assistantChoice small{display:block;color:#c2c9e8;margin-top:5px;font-size:13px}
+.assistantChoice .choiceArrow{margin-right:auto;font-size:22px;color:#ffd166}
+
 /* Study Quest tools */
 #toolsMenuBtn{position:fixed;z-index:12000;top:14px;right:14px;width:48px;height:48px;border-radius:14px;background:#263b86;border:1px solid #9aa8ed;font-size:22px;box-shadow:0 8px 24px #0007}
 #toolsDrawer{position:fixed;z-index:12001;top:0;right:0;height:100dvh;width:min(330px,88vw);padding:22px;background:#151f40;border-left:1px solid #6677b5;box-shadow:-15px 0 45px #0009;transform:translateX(110%);transition:transform .25s;direction:rtl;overflow:auto}
@@ -138,14 +149,17 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 </section>
 <section class="toolPanel" id="assistantPanel">
  <div class="toolInner">
-  <div class="toolTop"><h2>🤖 AI Assistant</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
-  <p class="plannerMeta">مساعدك الدراسي الذكي داخل Study Quest، يعمل بواسطة Gemini.</p>
-  <div class="aiChoice"><button id="chooseGemini" class="selected">Gemini</button></div>
-  <div id="aiChatLog" class="aiChatLog" aria-live="polite"><div class="aiBubble assistant">أهلًا! أنا مساعد Study Quest. اسألني عن دروسك أو خطتك الدراسية. ✨</div></div>
-  <label for="aiPrompt">رسالتك</label>
-  <textarea id="aiPrompt" class="toolField" rows="3" placeholder="اكتب سؤالك هنا..."></textarea>
-  <button id="sendAI">إرسال الرسالة</button>
-  <div class="aiNotice" id="aiNotice">المحادثة ستظهر هنا. لتشغيل الردود، يلزم نشر دالة Supabase وإضافة مفاتيح API السرية من إعدادات المشروع.</div>
+  <div class="toolTop"><h2>✨ اختار مساعدك</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p class="plannerMeta">اختار التطبيق اللي تحب تستخدمه. لو التطبيق مثبت على جهازك، جرّب الرابط يفتحه؛ وإلا هتقدر تستخدم نسخة الويب.</p>
+  <div class="assistantChoices">
+   <a class="assistantChoice chatgptChoice" href="https://chatgpt.com/" target="_blank" rel="noopener">
+    <span class="assistantLogo">✳</span><span><b>ChatGPT</b><small>فتح تطبيق ChatGPT أو الموقع</small></span><span class="choiceArrow">↗</span>
+   </a>
+   <a class="assistantChoice geminiChoice" href="https://gemini.google.com/app" target="_blank" rel="noopener">
+    <span class="assistantLogo">✦</span><span><b>Gemini</b><small>فتح تطبيق Gemini أو الموقع</small></span><span class="choiceArrow">↗</span>
+   </a>
+  </div>
+  <p class="smallprint">فتح التطبيق تلقائيًا يعتمد على إعدادات الجهاز ودعم روابط التطبيقات. لو ما فتحش التطبيق، هتفتح نسخة الويب.</p>
  </div>
 </section>
 <section class="toolPanel" id="spotifyPanel">
@@ -460,27 +474,8 @@ readState();applyWeek();refreshTrophies(false);
  },1000)});
  $('timerPause').addEventListener('click',()=>{stop();$('timerStart').textContent='استكمال';});
  $('timerReset').addEventListener('click',reset);render();
- // In-page AI chat. Provider keys stay in Supabase Edge Function secrets.
- let chatHistory=[],aiBusy=false;
- $('aiNotice').textContent='المساعد يعمل بواسطة Gemini. محادثتك مستمرة داخل Study Quest.';
- function addBubble(text,who){const el=document.createElement('div');el.className='aiBubble '+who;el.textContent=text;$('aiChatLog').appendChild(el);$('aiChatLog').scrollTop=$('aiChatLog').scrollHeight;return el}
- async function sendAIMessage(){
-   const prompt=$('aiPrompt').value.trim();if(!prompt||aiBusy)return;
-   $('aiPrompt').value='';addBubble(prompt,'user');chatHistory.push({role:'user',content:prompt});
-   aiBusy=true;$('sendAI').disabled=true;$('sendAI').textContent='جاري التفكير...';
-   const waiting=addBubble('جاري تجهيز الرد...','assistant');
-   try{
-     const session=await window.supabase.createClient('https://xyaogsqqasgmrximzgaf.supabase.co','sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_').auth.getSession();
-     const token=session.data&&session.data.session&&session.data.session.access_token;
-     if(!token)throw new Error('سجّل الدخول أولًا لاستخدام المساعد.');
-     const response=await fetch('https://xyaogsqqasgmrximzgaf.supabase.co/functions/v1/study-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':'sb_publishable_-wyFB-mAbd428B9TSYaKFw_Qxc5D26_'},body:JSON.stringify({provider:'gemini',messages:chatHistory.slice(-12)})});
-     const data=await response.json();if(!response.ok)throw new Error(data.error||'تعذر الحصول على رد.');
-     waiting.textContent=data.reply||'لم يصل رد من المساعد.';chatHistory.push({role:'assistant',content:waiting.textContent});
-   }catch(e){waiting.classList.add('error');waiting.textContent='المساعد غير جاهز حاليًا: '+e.message+'\nتأكد من نشر study-ai وإضافة GEMINI_API_KEY في Supabase.'}
-   finally{aiBusy=false;$('sendAI').disabled=false;$('sendAI').textContent='إرسال الرسالة';}
- }
- $('sendAI').addEventListener('click',sendAIMessage);
- $('aiPrompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAIMessage()}});
+ // Assistant choices use official universal links.
+ // The operating system may open the installed app; otherwise the website opens.
  // Spotify opens from the website; optional public playlist embed.
  $('loadSpotify').addEventListener('click',()=>{
    const raw=$('spotifyLink').value.trim();const match=raw.match(/open\.spotify\.com\/(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/);
