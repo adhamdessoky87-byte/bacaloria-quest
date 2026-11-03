@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BACALORIA QUEST</title>
+<title>Study Quest</title>
 <style>
 :root {
  --site-primary:#263b86;
@@ -50,11 +50,37 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
 .subjectEditorHead b{color:#ffd166}
 
 .manualBuilder{margin:14px 0;padding:14px;border:1px solid #46558b;border-radius:14px;background:#10172f}.manualTaskRow{display:grid;grid-template-columns:1fr  .8fr 1fr 1.5fr auto;gap:7px;align-items:center;margin:9px 0;padding:9px;background:#1b2548;border-radius:10px}.manualTaskRow input,.manualTaskRow select{min-width:0;width:100%;padding:9px;border-radius:8px;border:1px solid #46558b;background:#10172f;color:white;font:inherit}.manualHint{font-size:12px;color:#c2c9e8;line-height:1.7}@media(max-width:600px){.manualTaskRow{grid-template-columns:1fr 1fr}.manualTaskRow .taskText{grid-column:1/-1}.manualTaskRow button{grid-column:1/-1}}
+
+/* Study Quest tools */
+#toolsMenuBtn{position:fixed;z-index:12000;top:14px;right:14px;width:48px;height:48px;border-radius:14px;background:#263b86;border:1px solid #9aa8ed;font-size:22px;box-shadow:0 8px 24px #0007}
+#toolsDrawer{position:fixed;z-index:12001;top:0;right:0;height:100dvh;width:min(330px,88vw);padding:22px;background:#151f40;border-left:1px solid #6677b5;box-shadow:-15px 0 45px #0009;transform:translateX(110%);transition:transform .25s;direction:rtl;overflow:auto}
+#toolsDrawer.open{transform:translateX(0)}
+#toolsBackdrop{position:fixed;z-index:12000;inset:0;background:#05091dcc;display:none}
+#toolsBackdrop.show{display:block}
+.drawerHead{display:flex;justify-content:space-between;align-items:center;margin:28px 0 20px}
+.drawerAction{display:flex;align-items:center;gap:12px;width:100%;padding:14px;margin:10px 0;text-align:right;background:#222f5d;border:1px solid #52639d;border-radius:13px}
+.drawerAction span{font-size:23px}
+.toolPanel{display:none;position:fixed;z-index:11999;inset:0;overflow:auto;background:#10172f;padding:22px}
+.toolPanel.active{display:block}
+.toolInner{max-width:760px;margin:55px auto 30px;background:#1b2548;border:1px solid #52639d;border-radius:20px;padding:22px}
+.toolTop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.toolTop h2{margin:0}
+.toolClose{background:#572f52}
+.toolField{width:100%;padding:12px;border:1px solid #52639d;border-radius:10px;background:#10172f;color:white;font:inherit;margin:6px 0 14px}
+.timerFace{font-size:clamp(54px,13vw,90px);font-weight:800;text-align:center;color:#ffd166;font-variant-numeric:tabular-nums;margin:20px 0}
+.timerStatus{text-align:center;color:#c2c9e8}
+.timerSettings{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.timerSettings label{font-size:13px;color:#c2c9e8}
+.aiChoice{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.aiChoice button.selected{background:#65a9d9;border-color:#c4e7ff;color:#10172f}
+.aiNotice{font-size:13px;line-height:1.8;color:#c2c9e8;background:#10172f;padding:12px;border-radius:10px;margin:12px 0}
+.spotifyFrame{width:100%;height:380px;border:0;border-radius:14px;background:#10172f}
+@media(max-width:600px){.toolPanel{padding:10px}.toolInner{padding:16px;margin-top:58px}.timerSettings{grid-template-columns:1fr 1fr}}
 </style></head>
 <body>
 <div id="accountGate">
  <div class="gatebox">
-  <div class="kicker">YOUR STUDY ADVENTURE</div><h2 id="gateTitle">BACALORIA QUEST</h2>
+  <div class="kicker">YOUR STUDY ADVENTURE</div><h2 id="gateTitle">STUDY QUEST</h2>
   <p id="gateIntro">سجّل الدخول أو أنشئ حسابك عشان تبدأ رحلتك.</p>
   <div id="authFields">
    <label>اسم المستخدم (Username)</label><input id="authUser" autocomplete="username" maxlength="24" placeholder="مثال: adham_1">
@@ -84,8 +110,57 @@ h2{font-size:calc(21px * var(--site-heading-scale));margin:22px 0 12px}.days{dis
   <div class="gateactions" id="setupActions" style="display:none"><button id="saveSetupBtn">إنشاء جدولي</button></div>
   <div id="accountNotice">نسخة تجريبية: بيانات الحساب محفوظة في هذا المتصفح فقط، وليست حماية أو مزامنة حقيقية بين الأجهزة.</div>
  </div>
-</div><div id="levelToast" role="status" aria-live="polite"></div><div class="journey"><aside class="side"><h2>🧭 MY JOURNEY</h2><p>PLAYER: <span id="profileName"></span></p><button id="changeName">تغيير الاسم</button><button id="editPlanBtn">✏️ تعديل الجدول</button><button id="logoutBtn" class="reset">تسجيل الخروج</button><div class="monthbox"><b>🌱 MONTH 1</b><br>Weeks 1–4</div><div class="monthbox"><b>⚡ MONTH 2</b><br>Weeks 5–8</div><div class="monthbox"><b>🏆 MONTH 3</b><br>Weeks 9–12</div><div class="monthbox"><b>📅 YOUR 12-WEEK RUN</b><br><span id="journeyWeek">Current: Week 1</span></div><div class="monthbox"><b id="journeyLevel">Level 1</b><br><span id="journeyXP">0 XP</span></div></aside><div id="questMain"><main id="app"><div class="wrap">
-<header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>BACALORIA QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
+</div><div id="levelToast" role="status" aria-live="polite"></div>
+<button id="toolsMenuBtn" aria-label="فتح الأدوات" title="الأدوات">☰</button>
+<div id="toolsBackdrop"></div>
+<aside id="toolsDrawer" aria-label="قائمة الأدوات">
+ <div class="drawerHead"><div><div class="kicker">STUDY QUEST</div><h2 style="margin:5px 0">أدواتك</h2></div><button id="closeTools">✕</button></div>
+ <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
+ <button class="drawerAction" data-open-tool="assistant"><span>🤖</span><b>AI Assistant</b></button>
+ <button class="drawerAction" data-open-tool="spotify"><span>🎧</span><b>Spotify</b></button>
+ <p class="smallprint">كل أدوات التركيز في مكان واحد.</p>
+</aside>
+<section class="toolPanel" id="pomodoroPanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>⏱️ Pomodoro</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p class="plannerMeta">خصص وقت التركيز والراحة بالطريقة اللي تناسبك.</p>
+  <div class="timerSettings">
+   <label>وقت المذاكرة (دقيقة)<input class="toolField" id="focusMinutes" type="number" min="1" max="180" value="45"></label>
+   <label>وقت الراحة (دقيقة)<input class="toolField" id="breakMinutes" type="number" min="1" max="60" value="15"></label>
+   <label>عدد الجولات<input class="toolField" id="roundCount" type="number" min="1" max="20" value="4"></label>
+  </div>
+  <div class="timerStatus" id="timerStatus">جاهز لجولة التركيز الأولى</div>
+  <div class="timerFace" id="timerFace">45:00</div>
+  <div class="actions" style="justify-content:center">
+   <button id="timerStart">ابدأ</button><button id="timerPause">إيقاف مؤقت</button><button id="timerReset" class="reset">إعادة ضبط</button>
+  </div>
+ </div>
+</section>
+<section class="toolPanel" id="assistantPanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>🤖 AI Assistant</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p class="plannerMeta">اختار المساعد اللي تحب تستخدمه.</p>
+  <div class="aiChoice"><button id="chooseChatGPT" class="selected">ChatGPT</button><button id="chooseGemini">Gemini</button></div>
+  <label for="aiPrompt">اكتب سؤالك أو طلبك</label>
+  <textarea id="aiPrompt" class="toolField" rows="4" placeholder="مثلاً: اشرح لي قانون نيوتن الثاني بطريقة بسيطة..."></textarea>
+  <button id="sendAI">متابعة مع المساعد المختار ↗</button>
+  <div class="aiNotice" id="aiNotice">سيتم فتح المساعد المختار مع سؤالك. تشغيل محادثة AI كاملة داخل Study Quest يحتاج ربط Backend آمن ومفاتيح API؛ لن نضع مفاتيح سرية داخل كود الموقع.</div>
+ </div>
+</section>
+<section class="toolPanel" id="spotifyPanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>🎧 Spotify</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p class="plannerMeta">افتح Spotify Web Player من هنا، أو اعرض Playlist داخل الصفحة باستخدام رابط قائمة تشغيل عامة.</p>
+  <button id="openSpotify">افتح Spotify ↗</button>
+  <label for="spotifyLink" style="display:block;margin-top:18px">رابط Playlist من Spotify</label>
+  <input id="spotifyLink" class="toolField" placeholder="https://open.spotify.com/playlist/...">
+  <button id="loadSpotify">عرض قائمة التشغيل هنا</button>
+  <div id="spotifyEmbedArea" style="margin-top:14px"></div>
+  <p class="smallprint">قد يطلب Spotify تسجيل الدخول، وبعض خصائص التشغيل تعتمد على حساب Spotify ونوعه.</p>
+ </div>
+</section>
+<div class="journey"><aside class="side"><h2>🧭 MY JOURNEY</h2><p>PLAYER: <span id="profileName"></span></p><button id="changeName">تغيير الاسم</button><button id="editPlanBtn">✏️ تعديل الجدول</button><button id="logoutBtn" class="reset">تسجيل الخروج</button><div class="monthbox"><b>🌱 MONTH 1</b><br>Weeks 1–4</div><div class="monthbox"><b>⚡ MONTH 2</b><br>Weeks 5–8</div><div class="monthbox"><b>🏆 MONTH 3</b><br>Weeks 9–12</div><div class="monthbox"><b>📅 YOUR 12-WEEK RUN</b><br><span id="journeyWeek">Current: Week 1</span></div><div class="monthbox"><b id="journeyLevel">Level 1</b><br><span id="journeyXP">0 XP</span></div></aside><div id="questMain"><main id="app"><div class="wrap">
+<header class="hero"><div><div class="kicker">YOUR STUDY ADVENTURE • LEVEL UP YOUR FUTURE</div><h1>STUDY QUEST</h1><p>THE ROAD TO SUCCESS — MECHATRONICS ENGINEER ⚙️</p></div><div class="heroicon" aria-hidden="true">🤖⚙️</div></header>
 <section class="stats" aria-label="إحصائيات التقدم"><div class="stat"><small>إجمالي الخبرة</small><strong><span id="total">0</span> XP</strong></div><div class="stat"><small>المستوى الحالي</small><strong id="level">Level 1</strong></div><div class="stat"><small>التقدم للمستوى التالي</small><strong><span id="remain">1000</span> XP</strong><div class="bar"><span id="progress"></span></div></div></section>
 <h2>🗓️ مهام الأسبوع <span id="weekLabel">Week 1</span> | علّم بعد الإنجاز</h2><div class="actions" style="margin:0 0 14px"><button id="nextWeek">ابدأ الأسبوع التالي ←</button><span id="weekInfo" class="empty">تقدم كل أسبوع محفوظ، والـ XP تراكمي.</span></div>
 <section class="days" id="days">
@@ -147,7 +222,7 @@ readState();applyWeek();
 
 const profileStore='bacaloria-quest-player-v1';
 let playerName=localStorage.getItem(profileStore)||'';
-function askPlayerName(){const v=prompt('اكتب اسمك في BACALORIA QUEST',playerName);if(v&&v.trim()){playerName=v.trim().slice(0,24);localStorage.setItem(profileStore,playerName);document.getElementById('profileName').textContent=playerName}}
+function askPlayerName(){const v=prompt('اكتب اسمك في Study Quest',playerName);if(v&&v.trim()){playerName=v.trim().slice(0,24);localStorage.setItem(profileStore,playerName);document.getElementById('profileName').textContent=playerName}}
 document.getElementById('changeName').addEventListener('click',askPlayerName);
 document.getElementById('profileName').textContent=playerName||'Player';
 
@@ -180,7 +255,7 @@ readState();applyWeek();refreshTrophies(false);
    $('personalSetup').style.display='block';$('setupActions').style.display='flex';setError('');
  }
  function showAuth(){
-   $('accountGate').hidden=false;$('gateTitle').textContent='BACALORIA QUEST';
+   $('accountGate').hidden=false;$('gateTitle').textContent='STUDY QUEST';
    $('gateIntro').textContent='سجّل الدخول أو أنشئ حسابك عشان تبدأ رحلتك.';
    $('authFields').style.display='block';$('authActions').style.display='flex';
    $('personalSetup').style.display='none';$('setupActions').style.display='none';
@@ -354,4 +429,54 @@ readState();applyWeek();refreshTrophies(false);
    else showAuth();
  });
 })();
-</script></body></html>
+</script>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const drawer=$('toolsDrawer'),backdrop=$('toolsBackdrop');
+ const closeDrawer=()=>{drawer.classList.remove('open');backdrop.classList.remove('show')};
+ $('toolsMenuBtn').addEventListener('click',()=>{drawer.classList.add('open');backdrop.classList.add('show')});
+ $('closeTools').addEventListener('click',closeDrawer);backdrop.addEventListener('click',closeDrawer);
+ function closePanels(){document.querySelectorAll('.toolPanel').forEach(p=>p.classList.remove('active'))}
+ document.querySelectorAll('[data-open-tool]').forEach(b=>b.addEventListener('click',()=>{
+   closeDrawer();closePanels();$(b.dataset.openTool+'Panel').classList.add('active');
+ }));
+ document.querySelectorAll('[data-close-tool]').forEach(b=>b.addEventListener('click',closePanels));
+ // Customizable Pomodoro timer
+ let interval=null,remaining=45*60,phase='focus',round=1,running=false;
+ const face=$('timerFace'),status=$('timerStatus');
+ const config=()=>({focus:Math.max(1,Math.min(180,Number($('focusMinutes').value)||45)),rest:Math.max(1,Math.min(60,Number($('breakMinutes').value)||15)),rounds:Math.max(1,Math.min(20,Number($('roundCount').value)||4))});
+ const render=()=>{face.textContent=String(Math.floor(remaining/60)).padStart(2,'0')+':'+String(remaining%60).padStart(2,'0');status.textContent=(phase==='focus'?'وقت التركيز':'وقت الراحة')+' • الجولة '+round};
+ const stop=()=>{if(interval)clearInterval(interval);interval=null;running=false};
+ const reset=()=>{stop();phase='focus';round=1;remaining=config().focus*60;render();$('timerStart').textContent='ابدأ'};
+ ['focusMinutes','breakMinutes','roundCount'].forEach(id=>$(id).addEventListener('change',()=>{if(!running)reset()}));
+ $('timerStart').addEventListener('click',()=>{if(running)return;running=true;$('timerStart').textContent='يعمل الآن';interval=setInterval(()=>{
+   remaining--;if(remaining<=0){
+    if(phase==='focus'){if(round>=config().rounds){stop();remaining=0;status.textContent='أحسنت! خلصت كل الجولات 🎉';render();return}phase='break';remaining=config().rest*60}
+    else{phase='focus';round++;remaining=config().focus*60}
+    try{if('Notification'in window&&Notification.permission==='granted')new Notification('Study Quest',{body:phase==='focus'?'انتهت الراحة، وقت التركيز!':'انتهت جلسة التركيز، خذ استراحة.'})}catch(e){}
+   }
+   render();
+ },1000)});
+ $('timerPause').addEventListener('click',()=>{stop();$('timerStart').textContent='استكمال';});
+ $('timerReset').addEventListener('click',reset);render();
+ // AI provider handoff. API-backed in-page chat requires a secure server endpoint.
+ let provider='chatgpt';
+ const setProvider=p=>{provider=p;$('chooseChatGPT').classList.toggle('selected',p==='chatgpt');$('chooseGemini').classList.toggle('selected',p==='gemini')};
+ $('chooseChatGPT').addEventListener('click',()=>setProvider('chatgpt'));
+ $('chooseGemini').addEventListener('click',()=>setProvider('gemini'));
+ $('sendAI').addEventListener('click',()=>{
+   const prompt=$('aiPrompt').value.trim();if(!prompt){$('aiPrompt').focus();return}
+   const url=provider==='chatgpt'?'https://chatgpt.com/?q='+encodeURIComponent(prompt):'https://gemini.google.com/app';
+   window.open(url,'_blank','noopener,noreferrer');
+ });
+ // Spotify opens from the website; optional public playlist embed.
+ $('openSpotify').addEventListener('click',()=>window.open('https://open.spotify.com/','_blank','noopener,noreferrer'));
+ $('loadSpotify').addEventListener('click',()=>{
+   const raw=$('spotifyLink').value.trim();const match=raw.match(/open\.spotify\.com\/(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/);
+   if(!match){$('spotifyEmbedArea').innerHTML='<p class="plannerMeta">حط رابط Playlist أو Album أو Track صحيح من Spotify.</p>';return}
+   $('spotifyEmbedArea').innerHTML='<iframe class="spotifyFrame" title="Spotify player" src="https://open.spotify.com/embed/'+match[1]+'/'+match[2]+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+ });
+})();
+</script>
+</body></html>
