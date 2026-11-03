@@ -405,7 +405,7 @@ readState();applyWeek();refreshTrophies(false);
    if(p.achievements)localStorage.setItem('bacaloria-quest-achievements-v1',JSON.stringify(p.achievements));
    if(p.playerName)localStorage.setItem('bacaloria-quest-player-v1',p.playerName);
    $('profileName').textContent=p.playerName||data.username;
-   if(data.planner&&data.planner.setup){const byWeek=p.customProgressByWeek||{};buildPlanner(data.planner.setup,byWeek[String(state.currentWeek)]||p.customProgress||{});$('accountGate').hidden=true}
+   if(data.planner&&data.planner.setup){const byWeek=p.customProgressByWeek||{};buildPlanner(data.planner.setup,byWeek[String(state.currentWeek)]||(state.currentWeek===1?p.customProgress||{}:{}));$('accountGate').hidden=true}
    else showSetup();
    refreshTrophies(false);
  }
@@ -585,7 +585,7 @@ readState();applyWeek();refreshTrophies(false);
    if(error)return setError('تعذر حفظ الجدول: '+error.message);
    profile.planner={setup};$('accountGate').hidden=true;
    $('profileName').textContent=localStorage.getItem('bacaloria-quest-player-v1')||current;
-   buildPlanner(setup,profile.progress?.customProgress||{});bqSync();
+   buildPlanner(setup,(profile.progress?.customProgressByWeek||{})[String(state.currentWeek)]||(state.currentWeek===1?profile.progress?.customProgress||{}:{}));bqSync();
  };
  $('accountNotice').textContent='حسابات سحابية: استخدم اسم المستخدم وكلمة المرور للدخول من أي جهاز.';
  client.auth.getSession().then(async({data,error})=>{
