@@ -660,14 +660,20 @@ readState();applyWeek();refreshTrophies(false);
      return '<div class="monthbox" style="margin:9px 0"><b>'+(complete?'✅ ':'📘 ')+g.name+'</b><div class="plannerMeta">'+n+' / '+g.tasks.length+' مهام مكتملة</div><div class="bar"><span style="width:'+(n/g.tasks.length*100)+'%"></span></div></div>';
    }).join('');
    const week=(typeof state!=='undefined'?state.currentWeek:1),claimed=Array.isArray(economy.weeklyBonusWeeks)&&economy.weeklyBonusWeeks.includes(week);
+   economy.weeklyBonusWeeks=Array.isArray(economy.weeklyBonusWeeks)?economy.weeklyBonusWeeks:[];
    if(all.length&&done===all.length&&!claimed){
-     economy.weeklyBonusWeeks=economy.weeklyBonusWeeks||[];economy.weeklyBonusWeeks.push(week);
+     economy.weeklyBonusWeeks.push(week);
      economy.weeklyBonuses=(Number(economy.weeklyBonuses)||0)+50;
      $('coinHint').textContent='مكافأة الأسبوع: +50 Coins! 🎉';
      localStorage.setItem(storeKey,JSON.stringify(economy));
      $('shopMessage').textContent='مبروك! خلصت كل مهام الأسبوع وكسبت 50 Coins 🪙';
+   }else if(all.length&&done!==all.length&&claimed){
+     economy.weeklyBonusWeeks=economy.weeklyBonusWeeks.filter(w=>w!==week);
+     economy.weeklyBonuses=Math.max(0,(Number(economy.weeklyBonuses)||0)-50);
+     $('coinHint').textContent='تم خصم 50 Coins لإلغاء إكمال مهام الأسبوع.';
+     localStorage.setItem(storeKey,JSON.stringify(economy));
    }
-   status.textContent=claimed|| (all.length&&done===all.length)?'🎉 حصلت على مكافأة الأسبوع +50 Coins':'أكمل كل مهام الأسبوع لتحصل على 50 Coins 🪙';
+   status.textContent=(all.length&&done===all.length)?'🎉 حصلت على مكافأة الأسبوع +50 Coins':'أكمل كل مهام الأسبوع لتحصل على 50 Coins 🪙';
    render();
  }
  function render(){
