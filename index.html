@@ -195,6 +195,7 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
 <div id="toolsBackdrop"></div>
 <aside id="toolsDrawer" aria-label="قائمة الأدوات">
  <div class="drawerHead"><div><div class="kicker">STUDY QUEST</div><h2 style="margin:5px 0">أدواتك</h2></div><button id="closeTools">✕</button></div>
+ <button class="drawerAction" data-open-tool="profile"><span>👤</span><b>Profile</b><small>بيانات حسابك</small></button>
  <button class="drawerAction" data-open-tool="progress"><span>📊</span><b>تقدمي وإنجازاتي</b></button>
  <button class="drawerAction characterDrawerAction" data-open-tool="character"><span>👤</span><b>Character</b><small>خصص شكل شخصيتك</small></button>
  <button class="drawerAction" data-open-tool="pomodoro"><span>⏱️</span><b>Pomodoro</b></button>
@@ -202,6 +203,18 @@ body.shop-galaxy #app{background:radial-gradient(ellipse at 15% 10%,#7c3aed 0,tr
  <a class="drawerAction" href="https://open.spotify.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit"><span>🎧</span><b>Spotify</b><span style="margin-inline-start:auto">↗</span></a>
  <p class="smallprint">كل أدوات التركيز في مكان واحد.</p>
 </aside>
+<section class="toolPanel" id="profilePanel">
+ <div class="toolInner">
+  <div class="toolTop"><h2>👤 Profile — حسابي</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
+  <p>اسم المستخدم</p><div class="monthbox"><b id="accountUsername">—</b></div>
+  <p>كلمة المرور</p><div class="monthbox">•••••••• <small>كلمة المرور الحالية لا يمكن عرضها لأسباب أمنية.</small></div>
+  <h3>تغيير كلمة المرور</h3>
+  <input class="toolField" id="newProfilePassword" type="password" minlength="8" placeholder="اكتب كلمة المرور الجديدة">
+  <input class="toolField" id="confirmProfilePassword" type="password" minlength="8" placeholder="أكد كلمة المرور الجديدة">
+  <button id="saveProfilePassword" class="drawerAction" type="button">حفظ كلمة المرور الجديدة</button>
+  <p id="profilePasswordStatus" class="plannerMeta" aria-live="polite"></p>
+ </div>
+</section>
 <section class="toolPanel" id="progressPanel">
  <div class="toolInner">
   <div class="toolTop"><h2>📊 تقدمي الأسبوعي</h2><button class="toolClose" data-close-tool>إغلاق</button></div>
@@ -396,7 +409,7 @@ readState();applyWeek();refreshTrophies(false);
  async function loadProfile(user){
    const {data,error}=await client.from('profiles').select('id,username,planner,progress').eq('id',user.id).single();
    if(error)throw error;
-   profile=data;current=data.username;
+   profile=data;current=data.username;$('accountUsername').textContent=data.username||'—';
    const p=data.progress||{};
    if(p.weeklyState){
      localStorage.setItem('bacaloria-quest-progress-v3',JSON.stringify(p.weeklyState));
@@ -471,6 +484,19 @@ readState();applyWeek();refreshTrophies(false);
    row.append(head,n,t);$('subjectsEditor').appendChild(row);
  }
  $('loginBtn').onclick=login;$('signupBtn').onclick=createAccount;$('logoutBtn').onclick=logout;
+ $('saveProfilePassword').onclick=async()=>{
+   const a=$('newProfilePassword').value,b=$('confirmProfilePassword').value;
+   if(!current)return $('profilePasswordStatus').textContent='سجّل الدخول أولاً.';
+   if(a.length<8)return $('profilePasswordStatus').textContent='كلمة المرور لازم تكون 8 أحرف على الأقل.';
+   if(a!==b)return $('profilePasswordStatus').textContent='كلمتا المرور غير متطابقتين.';
+   $('saveProfilePassword').disabled=true;$('profilePasswordStatus').textContent='جاري تحديث كلمة المرور...';
+   const {error}=await client.auth.updateUser({password:a});
+   $('saveProfilePassword').disabled=false;
+   if(error){$('profilePasswordStatus').textContent='تعذر تحديث كلمة المرور: '+error.message;return;}
+   $('newProfilePassword').value='';$('confirmProfilePassword').value='';
+   $('profilePasswordStatus').textContent='تم تحديث كلمة المرور بنجاح.';
+ };
+
  $('changeName').onclick=()=>{
    if(!current)return;
    const v=prompt('اكتب الاسم الظاهر في الموقع',localStorage.getItem('bacaloria-quest-player-v1')||current);
