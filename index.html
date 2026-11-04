@@ -344,7 +344,7 @@ function weekData(){if(!state.weeks[state.currentWeek])state.weeks[state.current
 function applyWeek(){const data=weekData();boxes.forEach(b=>{b.checked=!!data[b.id];b.closest('.task').classList.toggle('done',b.checked)});update()}
 function update(){const allXp=Object.values(state.weeks).reduce((sum,w)=>sum+boxes.reduce((s,b)=>s+(w[b.id]?Number(b.dataset.xp):0),0),0);const currentXp=boxes.reduce((s,b)=>s+(b.checked?Number(b.dataset.xp):0),0);const level=Math.floor(allXp/1000)+1;const progress=allXp%1000;document.getElementById('total').textContent=allXp;document.getElementById('level').textContent='Level '+level;document.getElementById('remain').textContent=(1000-progress)+' XP';document.getElementById('progress').style.width=(progress/10)+'%';document.getElementById('weekLabel').textContent='Week '+state.currentWeek;document.getElementById('weekInfo').textContent='XP هذا الأسبوع: '+currentXp+' • إجمالي XP: '+allXp}
 boxes.forEach(b=>b.addEventListener('change',()=>{weekData()[b.id]=b.checked;b.closest('.task').classList.toggle('done',b.checked);save();update()}));
-document.getElementById('nextWeek').addEventListener('click',()=>{if(!confirm('تبدأ Week '+(state.currentWeek+1)+'؟ سيتم حفظ تقدم الأسبوع الحالي كما هو وبدء مهام جديدة بدون علامات إنجاز.'))return;state.currentWeek++;save();applyWeek();if(profile?.planner?.setup){const byWeek=profile.progress?.customProgressByWeek||{};buildPlanner(profile.planner.setup,byWeek[String(state.currentWeek)]||{});}window.scrollTo({top:0,behavior:'smooth'})});
+document.getElementById('nextWeek').addEventListener('click',()=>{if(!confirm('تبدأ Week '+(state.currentWeek+1)+'؟ سيتم حفظ تقدم الأسبوع الحالي كما هو وبدء مهام جديدة بدون علامات إنجاز.'))return;state.currentWeek++;save();applyWeek();if(window.refreshPlannerWeek)window.refreshPlannerWeek();window.scrollTo({top:0,behavior:'smooth'})});
 document.getElementById('reset').addEventListener('click',()=>{if(confirm('تمسح علامات الأسبوع الحالي فقط؟')){state.weeks[state.currentWeek]={};save();applyWeek()}});
 document.getElementById('all').addEventListener('click',()=>{boxes.forEach(b=>{weekData()[b.id]=false;b.checked=false;b.closest('.task').classList.remove('done')});save();update()});
 function formatTimes(root){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){node.nodeValue=node.nodeValue.replace(/\b(\d{1,2}):(\d{2})\b/g,(match,h,m)=>{h=Number(h);const suffix=h<12?'AM':'PM';const hour=h%12||12;return hour+':'+m+' '+suffix})}}
@@ -423,6 +423,7 @@ readState();applyWeek();refreshTrophies(false);
      if(error)console.error('Cloud sync failed:',error.message);else profile.progress=progress;
    },500);
  };
+ window.refreshPlannerWeek=function(){if(!profile?.planner?.setup)return;const byWeek=profile.progress?.customProgressByWeek||{};buildPlanner(profile.planner.setup,byWeek[String(state.currentWeek)]||{});};
  function buildPlanner(s,customProgress={}){
    const days=s.schedule?.days?.length?s.schedule.days.map(d=>d.name):(s.days||[]),hrs=s.hours||3,all=[];
    if(s.schedule?.days?.length)s.schedule.days.forEach((d,di)=>(d.tasks||[]).forEach((t,ti)=>all.push({...t,day:d.name,id:'photo_'+di+'_'+ti})));
@@ -437,7 +438,7 @@ readState();applyWeek();refreshTrophies(false);
      profile.progress=profile.progress||{};profile.progress.customProgressByWeek=profile.progress.customProgressByWeek||{};const wk=String(state.currentWeek);profile.progress.customProgressByWeek[wk]=profile.progress.customProgressByWeek[wk]||{};
      profile.progress.customProgressByWeek[wk][b.dataset.customId]=b.checked;
      const xp=Object.values(profile.progress.customProgressByWeek).reduce((sum,w)=>sum+Object.values(w||{}).filter(Boolean).length*150,0);
-     $('total').textContent=xp;$('level').textContent='Level '+(Math.floor(xp/1000)+1);$('remain').textContent=(1000-xp%1000)+' XP';$('progress').style.width=(xp%1000)/10+'%';bqSync();
+     $('total').textContent=xp;$('level').textContent='Level '+(Math.floor(xp/1000)+1);$('remain').textContent=(1000-xp%1000)+' XP';$('progress').style.width=(xp%1000)/10+'%';if(window.bqRecalculateCoins)window.bqRecalculateCoins();bqSync();
    }));
  }
  async function createAccount(){
@@ -680,13 +681,10 @@ readState();applyWeek();refreshTrophies(false);
  }
  function award(){
    const milestones=Math.floor(xp()/100);
-   if(milestones>economy.earnedMilestones){
-     const gained=(milestones-economy.earnedMilestones)*10;
-     economy.earnedMilestones=milestones;
-     $('coinHint').textContent='كسبت '+gained+' Coins جديدة! 🎉';
-     save();
-   } else render();
+   const difference=milestones-(Number(economy.earnedMilestones)||0);
+   if(difference!==0){economy.earnedMilestones=milestones;$('coinHint').textContent=difference>0?'كسبت '+(difference*10)+' Coins جديدة! 🎉':'تم خصم '+(Math.abs(difference)*10)+' Coins بعد إلغاء إنجازات.';save();}else render();
  }
+ window.bqRecalculateCoins=award;
  const themes={galaxy:'galaxy',nature:'nature',pink:'pink'};
  function equip(id){
    document.body.classList.remove('shop-galaxy','shop-nature','shop-pink');
